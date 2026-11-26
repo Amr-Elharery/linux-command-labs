@@ -1,0 +1,4 @@
+Synthetic backup note
+Project: atlas-demo
+Snapshot: sample-01
+Contents: text fixtures only

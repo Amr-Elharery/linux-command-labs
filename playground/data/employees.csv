@@ -1,0 +1,6 @@
+employee_id,name,department,role,status
+E1001,Synthetic User One,Engineering,Analyst,active
+E1002,Synthetic User Two,Support,Technician,active
+E1003,Synthetic User Three,Engineering,Developer,inactive
+E1004,Synthetic User Four,Finance,Analyst,active
+E1005,Synthetic User Five,Support,Developer,active

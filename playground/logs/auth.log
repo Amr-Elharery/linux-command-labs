@@ -1,0 +1,4 @@
+Mar 08 09:20:00 lab-host sshd[4101]: Failed password for synthetic-user from 192.0.2.10 port 2201 ssh2
+Mar 08 09:21:12 lab-host sshd[4102]: Accepted publickey for synthetic-user from 192.0.2.11 port 2202 ssh2
+Mar 08 09:22:44 lab-host sshd[4103]: Failed password for guest from 198.51.100.23 port 2203 ssh2
+Mar 08 09:24:01 lab-host sudo[4104]: synthetic-user : command allowed ; TTY=pts/0 ; COMMAND=/usr/bin/id

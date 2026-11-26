@@ -1,0 +1,3 @@
+1. inspect the sample configuration
+2. summarize synthetic transactions
+3. compare the two release notes
