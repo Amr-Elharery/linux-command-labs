@@ -18,7 +18,7 @@ A practical, GitHub-first learning resource for Linux command-line skills, desig
 | 01 | [File System Operations](content/stages/01-file-system/README.md) | `ls`, `pwd`, `cd`, `mkdir`, `cp`, `mv`, `rm` |
 | 02 | [File Content Operations](content/stages/02-file-content/README.md) | `cat`, `more`, `less`, `head`, `tail`, `nl` |
 | 03 | [File Search](content/stages/03-file-search/README.md) | `which`, `whereis`, `find` |
-| 04 | Text Processing | `grep`, `wc`, `cut`, `sort`, `uniq`, `tr`, `diff`, `join`, `xargs`, `awk` |
+| 04 | [Text Processing](content/stages/04-text-processing/README.md) | `grep`, `wc`, `cut`, `sort`, `uniq`, `tr`, `diff`, `join`, `xargs`, `awk` |
 | 05 | System Information | `top`, `free`, `df`, `du`, `time` |
 
 The supplied course describes 31 guided labs and 10 challenges (41 activities). Preserve this coverage when mapping source topics, and record any ambiguity in `docs/COURSE_MAPPING.md`.
@@ -63,7 +63,7 @@ Personal progress must not be uploaded or committed by default.
 
 ## Development status
 
-Milestones 0–4 establish the content schema, safe local playground scripts, and completed Stage 01–03 command content with cumulative challenges. Stage 04–05 content and the web application remain planned milestones.
+Milestones 0–4 establish the content schema, safe local playground scripts, and completed Stage 01–03 command content. Milestone 5 adds Stage 04 text-processing lessons and cumulative challenges. Stage 05 system-information content and the web application remain planned milestones.
 
 See:
 - [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md)

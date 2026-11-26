@@ -6,109 +6,126 @@ stage: 4
 category: text-processing
 mode: detailed
 difficulty: beginner
-summary: "Search lines of text for a matching pattern."
-tags: [search, logs, patterns]
-related: [find, awk, wc]
+summary: "Search lines of text for fixed strings or regular-expression patterns."
+tags: [search, logs, regular-expressions]
+related: [wc, awk, find]
 ---
-
-# grep — Detailed
+# `grep` — Detailed
 
 ## What it does
 
-`grep` reads text and prints lines that match a pattern. The name comes from an old editor command; for everyday use, think “filter these lines by a search expression.”
+Search lines of text for fixed strings or regular-expression patterns.
 
 ## Why it matters
 
-Logs and reports can be much larger than a screen. `grep` narrows them to relevant lines while leaving the source file unchanged.
+Text processing commands are most useful as small stages in a pipeline. Each reads arguments and/or standard input, then writes results to standard output; a pipe passes those results onward without an intermediate file.
 
 ## Syntax
 
-```bash
-grep [OPTION]... PATTERN [FILE]...
+```text
+grep [OPTIONS] PATTERN [FILE...]
 ```
 
-If no file is given, `grep` reads standard input. Quote patterns so the shell does not interpret special characters first.
+## Arguments and options
 
-## Arguments and useful options
+- `-i`: ignore letter case; `-n`: print matching line numbers; `-v`: select nonmatching lines.
+- `-c`: count matching lines; `-F`: treat the pattern literally; `-w`: match whole words (GNU grep).
+- `-r`: search directories recursively; keep the root scoped to `playground/`.
+- `-E`: use extended regular expressions, including `|` and `+` with fewer escapes; `--` ends option parsing.
 
-- `PATTERN`: a basic regular expression by default; use `-F` for literal text.
-- `-i`: ignore letter case.
-- `-n`: show line numbers.
-- `-v`: select lines that do not match.
-- `-r`: search directories recursively; scope the directory deliberately.
-- `-E`: use extended regular expressions, including `|` and `+` without extra escaping.
-- `-w`: match a whole word (GNU option; available on Kali and Ubuntu).
+## Core concept
 
-A successful match exits with status 0; no matching lines exits with status 1. This is useful in scripts and is not itself an error condition.
+A pattern is interpreted as a basic regular expression (BRE) by default. `.` matches one character, `^` anchors a line start, `$` anchors its end, and `*` repeats the preceding expression. Quote patterns so the shell passes them intact. `-E` enables the more readable extended syntax such as `WARN|ERROR`. Recursive searches should name a bounded playground directory and can use `--include` to restrict file types.
+
+## Standard input and pipelines
+
+When no file is named, grep reads standard input. A pipe (`|`) connects one command's standard output to the next command's standard input, so filtered lines can be counted without an intermediate file. Input/output redirection (`<`, `>`, `>>`) reads or writes files; avoid redirecting over a source fixture. Quote a pattern to keep shell glob characters from expanding before grep receives them.
 
 ## Examples
 
-The following output is illustrative and uses the fixture created below.
+```bash
+grep -n 'ERROR' playground/logs/app.log
+```
+
+```text
+2025-03-08T09:15:15Z ERROR request timed out
+```
+
+The line is printed because its text matches. Grep exits 0 when it finds a match, 1 when it finds none, and a larger status for an error.
 
 ```bash
-grep 'WARN' playground/logs/app.log
+grep -i -E 'warn|error' playground/logs/app.log
 ```
 
 ```text
 2025-03-08T09:14:00Z WARN cache refresh delayed
+2025-03-08T09:15:15Z ERROR request timed out
 2025-03-08T09:16:30Z WARN retry limit approaching
 ```
 
-Ignore case and print line numbers:
-
 ```bash
-grep -in 'warn' playground/logs/app.log
+grep -Rni --include='*.log' 'failed password' playground/logs
 ```
 
-Match either warning or error using extended regular expressions:
-
-```bash
-grep -En 'WARN|ERROR' playground/logs/app.log
-```
-
-Count matching lines without printing them:
+Shows the synthetic failed-password record(s) from auth.log. Recursive search is useful across several scoped log files.
 
 ```bash
 grep -c 'ERROR' playground/logs/app.log
+grep -F 'service started' playground/logs/app.log
 ```
 
-Search literal punctuation with fixed-string mode:
-
-```bash
-grep -F 'user.name' playground/logs/app.log
-```
+The first command prints `1`; the second searches for literal text rather than interpreting a regular expression.
 
 ## Practical scenario
 
-From the repository root, inspect the synthetic application log in `playground/logs/app.log`. Use `grep -n` to locate `ERROR`, then `grep -v` to show the lines that are not errors. The file is a synthetic fixture and should be treated as read-only.
+Triage synthetic logs by searching `playground/logs/` for `ERROR`, then compare with case-insensitive recursive search for failed authentication events.
 
 ## Common mistakes
 
-- **A dot matches more than a literal dot:** use `grep -F` or escape the dot in a regular expression.
-- **No output:** check spelling, case, and path; try `-i` if case should not matter.
-- **A pipeline stops after no matches:** `grep` returns status 1 when nothing matches. Handle that expected case when scripting.
-- **CSV fields split incorrectly:** `grep` matches lines, not CSV fields. Quoted commas require a CSV-aware tool or parser.
+An unquoted pattern containing `*` may expand as a shell filename glob. BRE and extended regular expressions differ; escape a literal dot or use `-F`. A no-match result normally has exit status 1; that is not a command failure in the usual sense. Recursive search may report unreadable files; narrow the path or inspect only files you can read. Grep filters lines and is not a CSV parser.
+
+- Quote paths containing spaces, for example `"playground/projects/organization-lab/inbox/quarterly report.txt"`.
+- A pipeline connects stdout to stdin. Use `>` to replace a file and `>>` to append; both can overwrite or alter files, so these guides avoid redirecting into source fixtures. `<` supplies stdin from a file.
+- Bash normally returns the status of the final pipeline command. In scripts, `set -o pipefail` also exposes earlier pipeline failures.
 
 ## Safety notes
 
-`grep` does not modify files unless combined with a separate redirection or command. Keep recursive searches inside `playground/` for exercises, and avoid searching private or sensitive logs. Do not redirect results over the source file.
+All file examples read synthetic files beneath `playground/`. The only pipelines that create derived paths are omitted; process substitutions and standard input keep examples read-only. Keep recursive grep, xargs, and data-processing commands scoped to the playground. Never use a shell pipeline to process untrusted filenames as code.
 
 ## Exercises
 
-### Guided
+### Guided practice
 
-1. Run `grep -n 'ERROR' playground/logs/app.log`.
-2. Use `grep -i 'warn'` to find warnings regardless of case.
-3. Use `grep -c 'INFO'` to count informational lines.
-4. Add `-v` to select non-error lines.
+1. Run `grep -n 'ERROR' playground/logs/app.log`, then use `-i` to search for warnings.
+2. Use `-c` to count INFO records and `-v` to select non-DEBUG lines.
+3. Search recursively for failed authentication events and explain why the search is scoped to `playground/logs`.
 
-### Independent
+### Independent practice
 
-Find lines mentioning either `timeout` or `refused`, case-insensitively. Print line numbers and explain why your chosen pattern uses `-E` or two separate commands.
+Find lines containing either `timeout` or `delayed`, case-insensitively. Print line numbers and explain whether your expression uses basic or extended regular-expression syntax.
+
+### Combination challenge
+
+Use `grep` with at least one related command to answer a question about the synthetic logs or data. Explain each pipeline stage and identify which command's exit status is reported.
+
+<details>
+<summary>Show exercise answers</summary>
+
+```bash
+grep -in -E 'WARN|ERROR' playground/logs/app.log
+grep -Rni --include='*.log' 'failed' playground/logs
+grep -n 'timeout\|delayed' playground/logs/app.log
+```
+
+</details>
+
+## Reset
+
+Examples are read-only. If an exercise creates files, keep them under `playground/projects/organization-lab/` and restore with `bash setup/reset-lab.sh --yes && bash setup/setup.sh`.
 
 ## Related commands
 
-- `find` locates files by properties (Stage 03).
-- `awk` works with fields and structured text.
-- `wc` counts lines, words, and bytes.
-- [grep — Revision](grep.revision.md)
+- [`wc` — Detailed](../04-text-processing/wc.detailed.md)
+- [`awk` — Detailed](../04-text-processing/awk.detailed.md)
+- [`find` — Detailed](../03-file-search/find.detailed.md)
+- [`grep` — Revision](./grep.revision.md)

@@ -6,46 +6,58 @@ stage: 4
 category: text-processing
 mode: revision
 difficulty: beginner
-summary: "Search lines of text for a matching pattern."
-tags: [search, logs, patterns]
-related: [find, awk, wc]
+summary: "Search lines of text for fixed strings or regular-expression patterns."
+tags: [search, logs, regular-expressions]
+related: [wc, awk, find]
 ---
+# `grep` — Revision
 
-# grep — Revision
+> Search lines of text for fixed strings or regular-expression patterns.
 
-**Purpose:** print lines that match a pattern; source files remain unchanged.
+**Syntax:** `grep [OPTIONS] PATTERN [FILE...]`
 
-**Syntax:** `grep [OPTION]... PATTERN [FILE]...`
+**Useful options:** `-i` ignores case; `-n` numbers matches; `-v` inverts selection; `-c` counts; `-F` treats the pattern literally; `-r` searches a scoped tree; `-E` enables extended regular expressions.
 
-## Useful options
-
-- `-i` ignore case; `-n` number matching lines; `-v` invert selection.
-- `-c` count matching lines; `-F` treat pattern literally.
-- `-E` use extended regular expressions; `-r` search a scoped directory tree.
+**Remember:** A pattern is interpreted as a basic regular expression (BRE) by default. `.` matches one character, `^` anchors a line start, `$` anchors its end, and `*` repeats the preceding expression. Quote patterns so the shell passes them intact. `-E` enables the more readable extended syntax such as `WARN|ERROR`. Recursive searches should name a bounded playground directory and can use `--include` to restrict file types.
 
 ## Examples
 
 ```bash
-grep 'ERROR' playground/logs/app.log
-grep -in 'warn' playground/logs/app.log
-grep -En 'WARN|ERROR' playground/logs/app.log
-grep -c 'INFO' playground/logs/app.log
-grep -F 'user.name' playground/logs/app.log
+grep -n 'ERROR' playground/logs/app.log
 ```
 
-## Common combinations
+2025-03-08T09:15:15Z ERROR request timed out
 
 ```bash
-grep -n 'ERROR' playground/logs/app.log | wc -l
-grep -v 'DEBUG' playground/logs/app.log
+grep -i -E 'warn|error' playground/logs/app.log
 ```
 
-`grep` returns 0 for a match, 1 for no match, and a larger status for an error. It matches text lines; it is not a CSV parser.
+```text
+2025-03-08T09:14:00Z WARN cache refresh delayed
+2025-03-08T09:15:15Z ERROR request timed out
+2025-03-08T09:16:30Z WARN retry limit approaching
+```
+
+```bash
+grep -Rni --include='*.log' 'failed password' playground/logs
+```
+
+Finds synthetic failed-login records in auth.log.
+
+```bash
+grep -c 'ERROR' playground/logs/app.log
+```
+
+Prints `1`.
 
 ## Quick recall
 
-1. Which flag ignores case?
-2. How do you search for literal `.` punctuation?
-3. What does exit status 1 mean for `grep`?
+1. What does grep status 1 mean?
+2. How do `-F` and `-E` change pattern interpretation?
+3. Why quote a pattern containing shell metacharacters?
 
-See [grep — Detailed](grep.detailed.md) for explanations and exercises.
+## Pipeline reminder
+
+Quote patterns and paths as needed. A pipe sends stdout to the next command's stdin; redirection writes to files. Check exit status 1 for the normal no-match case. Grep filters lines; it does not parse CSV columns.
+
+[Read the Detailed guide](./grep.detailed.md).

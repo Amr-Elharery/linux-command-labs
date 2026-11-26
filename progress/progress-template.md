@@ -38,7 +38,10 @@
 - [ ] `join`
 - [ ] `xargs`
 - [ ] `awk`
-- [ ] Stage challenges
+- [ ] [Needle in the Haystack challenge](../content/challenges/needle-in-the-haystack.md)
+- [ ] [Word Count and Sorting challenge](../content/challenges/word-count-and-sorting.md)
+- [ ] [Processing Employees Data challenge](../content/challenges/processing-employees-data.md)
+- [ ] [Integrated Pipeline Challenge](../content/challenges/integrated-text-pipeline.md)
 
 ## Stage 05 — System Information
 - [ ] `top`

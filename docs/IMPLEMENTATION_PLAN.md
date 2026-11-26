@@ -88,12 +88,18 @@ Status: Complete. All Stage 03 example blocks, deterministic name/type/size/time
 
 ## Milestone 5 — Stage 04 text processing
 
-Complete all ten text-processing commands and practical log/employee data scenarios.
+Tasks:
+- Create Detailed and Revision guides for all ten text-processing commands.
+- Add cumulative log-search, word-count/sorting, employee-data, and integrated-pipeline challenges.
+- Explain pipelines, standard input/output, quoting, redirection, field extraction, sort/join assumptions, exit statuses, NUL-safe paths, and CSV limitations.
+- Test examples and deterministic calculations against isolated playground copies.
 
 Acceptance:
-- Explain pipelines, quoting, whitespace, sorting prerequisites for `uniq`, and `xargs` safety.
-- Explain `awk` field processing and limitations of simple CSV parsing.
-- Fixtures and expected outputs are deterministic.
+- All ten commands have both modes and synthetic fixture examples.
+- Pipeline concepts, sort/join prerequisites, safe `xargs`, awk calculations, and CSV limitations are covered.
+- Tests leave the source playground unchanged and assert deterministic output.
+
+Status: Implementation complete; Stage 05 example runner and full regression suite are pending execution. See `scripts/test_stage05_examples.py`.
 
 ## Milestone 6 — Stage 05 system information
 

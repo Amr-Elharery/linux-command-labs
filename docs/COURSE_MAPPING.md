@@ -31,3 +31,5 @@ Milestone 2 adds [`Directory Organization`](../content/challenges/directory-orga
 Milestone 3 adds [`Log Inspection`](../content/challenges/log-inspection.md), an original read-only investigation of the synthetic application and authentication fixtures using Stage 02 commands. It is not asserted to be one of the source-course activities.
 
 The File Search milestone adds [`Critical Resource Discovery`](../content/challenges/critical-resource-discovery.md), an original challenge combining PATH lookup and safe searches within the synthetic playground. It does not claim to fill any missing source-course activity.
+
+Milestone 5 adds original [Needle in the Haystack](../content/challenges/needle-in-the-haystack.md), [Word Count and Sorting](../content/challenges/word-count-and-sorting.md), [Processing Employees Data](../content/challenges/processing-employees-data.md), and integrated pipeline challenges for the Text Processing stage. These authored exercises do not resolve the missing 41-activity source list.
