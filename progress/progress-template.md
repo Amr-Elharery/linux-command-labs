@@ -19,7 +19,7 @@
 - [ ] `head`
 - [ ] `tail`
 - [ ] `nl`
-- [ ] Stage challenge
+- [ ] [Log Inspection challenge](../content/challenges/log-inspection.md)
 
 ## Stage 03 — File Search
 - [ ] `which`

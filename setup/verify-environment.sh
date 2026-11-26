@@ -18,7 +18,7 @@ fi
 printf 'Shell: %s\n' "${BASH_VERSION:-unknown}"
 printf '\nRequired command availability\n'
 
-required=(bash pwd ls cd mkdir cp mv rm cat more less head tail nl which whereis find grep wc cut sort uniq tr diff join xargs awk top free df du time realpath mktemp)
+required=(bash pwd ls cd mkdir cp mv rm cat more less head tail nl which whereis find grep wc cut sort uniq tr diff join xargs awk top free df du time realpath mktemp timeout)
 missing=0
 for command_name in "${required[@]}"; do
   if command -v "$command_name" >/dev/null 2>&1; then

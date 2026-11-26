@@ -27,3 +27,5 @@ The source course description reports **31 guided labs and 10 challenges (41 act
 ## Linux Labs authored additions
 
 Milestone 2 adds [`Directory Organization`](../content/challenges/directory-organization.md), an original cumulative practice challenge combining `ls`, `pwd`, `cd`, `mkdir`, `cp`, `mv`, and `rm`. It is project-authored content and does not fill the outstanding source-course activity discrepancy.
+
+Milestone 3 adds [`Log Inspection`](../content/challenges/log-inspection.md), an original read-only investigation of the synthetic application and authentication fixtures using Stage 02 commands. It is not asserted to be one of the source-course activities.

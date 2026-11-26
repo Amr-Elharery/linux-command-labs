@@ -62,6 +62,8 @@ Acceptance:
 - Search examples are scoped to playground.
 - Large-file examples demonstrate `less` and `tail` appropriately.
 
+Status: Stage 02 is complete with six Detailed/Revision pairs and the `log-inspection` challenge. Its non-interactive example test is `scripts/test_stage02_examples.py`; Stage 03 remains to be completed.
+
 ## Milestone 4 — Stage 04 text processing
 
 Complete all ten text-processing commands and practical log/employee data scenarios.
