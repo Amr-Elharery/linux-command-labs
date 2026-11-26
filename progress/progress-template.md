@@ -25,7 +25,7 @@
 - [ ] `which`
 - [ ] `whereis`
 - [ ] `find`
-- [ ] Stage challenge
+- [ ] [Critical Resource Discovery challenge](../content/challenges/critical-resource-discovery.md)
 
 ## Stage 04 — Text Processing
 - [ ] `grep`

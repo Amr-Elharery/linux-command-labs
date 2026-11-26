@@ -53,18 +53,40 @@ Acceptance:
 
 Status: Detailed and Revision pages for all seven commands, the stage README, and the cumulative `directory-organization` challenge are authored. All 50 fenced Bash blocks passed in isolated playground copies on Ubuntu 26.04 WSL2. The reset workflow restores the dedicated marked practice workspace. See `scripts/test_stage01_examples.py` for the executable-example check.
 
-## Milestone 3 — Stages 02 and 03
+## Milestone 3 — File Content Operations (Stage 02)
 
-Complete file content and file search commands, with log inspection and resource discovery challenges.
+Tasks:
+- Create Detailed and Revision content for `cat`, `more`, `less`, `head`, `tail`, and `nl`.
+- Add the cumulative log inspection challenge.
+- Use the synthetic application and authentication logs.
+- Verify examples with bounded pager/follow tests.
 
 Acceptance:
-- All commands have both modes.
-- Search examples are scoped to playground.
-- Large-file examples demonstrate `less` and `tail` appropriately.
+- All six commands have both modes.
+- `cat` versus pagers, stdout/pipelines, and safe configuration-like file reading are explained.
+- `tail -f` and `tail -F` are distinguished accurately.
+- Pager and follow examples do not hang automated checks.
 
-Status: Stage 02 is complete with six Detailed/Revision pairs and the `log-inspection` challenge. Its non-interactive example test is `scripts/test_stage02_examples.py`; Stage 03 remains to be completed.
+Status: Complete. All 40 fenced Bash blocks and deterministic fixture-output checks passed on Ubuntu 26.04 WSL2. See `scripts/test_stage02_examples.py`.
 
-## Milestone 4 — Stage 04 text processing
+## Milestone 4 — File Search (Stage 03)
+
+Tasks:
+- Create Detailed and Revision content for `which`, `whereis`, and `find`.
+- Add the cumulative critical resource discovery challenge.
+- Demonstrate `find` predicates, logical grouping, safe actions, and permission handling within `playground/`.
+- Verify name/type/size/time results and command lookup behavior.
+
+Acceptance:
+- All three commands have both modes and their limits are distinguished.
+- Examples explain PATH, absolute/relative search roots, spaces, and find depth.
+- `-exec` and NUL-delimited `xargs -0` examples are read-only.
+- Modification-time examples use controlled fixture timestamps.
+- Tests leave the source playground unchanged.
+
+Status: Complete. All Stage 03 example blocks, deterministic name/type/size/time checks, PATH/whereis checks, and source-playground integrity checks passed on Ubuntu 26.04 WSL2. See `scripts/test_stage03_examples.py`.
+
+## Milestone 5 — Stage 04 text processing
 
 Complete all ten text-processing commands and practical log/employee data scenarios.
 
@@ -73,7 +95,7 @@ Acceptance:
 - Explain `awk` field processing and limitations of simple CSV parsing.
 - Fixtures and expected outputs are deterministic.
 
-## Milestone 5 — Stage 05 system information
+## Milestone 6 — Stage 05 system information
 
 Complete `top`, `free`, `df`, `du`, and `time`.
 
@@ -82,7 +104,7 @@ Acceptance:
 - Avoid brittle expected values for live system metrics.
 - Use `du` on repository playground for deterministic exercises where possible.
 
-## Milestone 6 — Web portal V1
+## Milestone 7 — Web portal V1
 
 Tasks:
 - Scaffold Next.js App Router, TypeScript, Tailwind, and selected UI components.
@@ -97,7 +119,7 @@ Acceptance:
 - Keyboard navigation and semantic structure are reasonable.
 - Build and lint/type checks pass.
 
-## Milestone 7 — Personal workspace
+## Milestone 8 — Personal workspace
 
 Tasks:
 - Add local progress, bookmarks, notes, recent activity, quiz results.
@@ -110,7 +132,7 @@ Acceptance:
 - Invalid imports are rejected safely.
 - UI explains browser/device-local behavior.
 
-## Milestone 8 — Final assessment and release
+## Milestone 9 — Final assessment and release
 
 Tasks:
 - Build integrated assessment across all five stages.

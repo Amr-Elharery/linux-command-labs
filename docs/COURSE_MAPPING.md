@@ -29,3 +29,5 @@ The source course description reports **31 guided labs and 10 challenges (41 act
 Milestone 2 adds [`Directory Organization`](../content/challenges/directory-organization.md), an original cumulative practice challenge combining `ls`, `pwd`, `cd`, `mkdir`, `cp`, `mv`, and `rm`. It is project-authored content and does not fill the outstanding source-course activity discrepancy.
 
 Milestone 3 adds [`Log Inspection`](../content/challenges/log-inspection.md), an original read-only investigation of the synthetic application and authentication fixtures using Stage 02 commands. It is not asserted to be one of the source-course activities.
+
+The File Search milestone adds [`Critical Resource Discovery`](../content/challenges/critical-resource-discovery.md), an original challenge combining PATH lookup and safe searches within the synthetic playground. It does not claim to fill any missing source-course activity.

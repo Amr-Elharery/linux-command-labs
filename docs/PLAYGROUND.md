@@ -65,6 +65,6 @@ Run every Bash-fenced Stage 01 tutorial and challenge solution in isolated fixtu
 python3 scripts/test_stage01_examples.py
 ```
 
-Stage 02 uses `python3 scripts/test_stage02_examples.py`. It captures pager output, bounds each command to five seconds, runs follow examples with a short `timeout`, and compares deterministic `cat`, `head`, `tail`, `more`, `less`, and `nl` output with the synthetic logs.
+Stage 02 uses `python3 scripts/test_stage02_examples.py`. It captures pager output, bounds each command to five seconds, runs follow examples with a short `timeout`, and compares deterministic `cat`, `head`, `tail`, `more`, `less`, and `nl` output with the synthetic logs. Stage 03 uses `python3 scripts/test_stage03_examples.py`; it validates search results in isolated fixture copies and checks that the source playground remains unchanged.
 
 The lifecycle test checks two consecutive setup runs, preservation of `app.log`, generated fixture contents, reset followed by setup from another working directory, preservation of an unrelated file, removal and restoration of the organization workspace, rejection of symlinked playground/subdirectory/fixture paths, and safe replacement of a hard-linked fixture. It creates and removes only its own temporary test directory.

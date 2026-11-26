@@ -17,7 +17,7 @@ A practical, GitHub-first learning resource for Linux command-line skills, desig
 |---|---|---|
 | 01 | [File System Operations](content/stages/01-file-system/README.md) | `ls`, `pwd`, `cd`, `mkdir`, `cp`, `mv`, `rm` |
 | 02 | [File Content Operations](content/stages/02-file-content/README.md) | `cat`, `more`, `less`, `head`, `tail`, `nl` |
-| 03 | File Search | `which`, `whereis`, `find` |
+| 03 | [File Search](content/stages/03-file-search/README.md) | `which`, `whereis`, `find` |
 | 04 | Text Processing | `grep`, `wc`, `cut`, `sort`, `uniq`, `tr`, `diff`, `join`, `xargs`, `awk` |
 | 05 | System Information | `top`, `free`, `df`, `du`, `time` |
 
@@ -63,7 +63,7 @@ Personal progress must not be uploaded or committed by default.
 
 ## Development status
 
-Milestones 0–2 establish the content schema, representative `grep` tutorial pair, `Log Triage` challenge, safe local playground scripts, and the complete Stage 01 file-system tutorials with a cumulative challenge. Stage 02 file-content guides and the `Log Inspection` challenge are now authored; Stage 03–05 and the web application remain planned milestones.
+Milestones 0–4 establish the content schema, safe local playground scripts, and completed Stage 01–03 command content with cumulative challenges. Stage 04–05 content and the web application remain planned milestones.
 
 See:
 - [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md)
