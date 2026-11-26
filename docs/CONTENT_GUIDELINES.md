@@ -1,5 +1,36 @@
 # Content Guidelines
 
+## Content metadata schema (Milestone 0)
+
+Use YAML frontmatter between `---` delimiters. Keep values to plain strings, integers, booleans, and inline lists of strings; do not use YAML aliases, nested objects, or multiline scalars in V1 content.
+
+### Command pages
+
+Required fields on both mode files:
+
+```yaml
+id: grep                 # stable command ID; same in both files
+title: "grep"
+type: command
+stage: 4                  # integer 1–5
+category: text-processing # kebab-case stage category
+mode: detailed            # detailed or revision
+difficulty: beginner      # beginner, intermediate, or advanced
+summary: "Search text using patterns."
+tags: [search, logs, regex]
+related: [find, awk, wc]  # command IDs
+```
+
+Required fields must be present and non-empty; `stage`, `mode`, `type`, and `difficulty` must use the values above. Filenames use `<id>.<mode>.md`. A command must eventually have exactly one file for each mode. Related IDs must resolve to known command IDs once the full command set exists; the initial validator allows IDs not yet authored but requires every referenced ID to be in the supplied course command inventory.
+
+### Challenge pages
+
+Required fields: `id` (stable kebab-case identifier), `title`, `type: challenge`, `stage` (1–5), `difficulty`, `summary`, `objectives` (string list), `prerequisites` (command ID list), and `starting_files` (repository-relative paths under `playground/`). Challenge prose must include the challenge format in section 4 below. Hide the solution in `<details><summary>Show solution</summary>…</details>`.
+
+### Links and validation
+
+Use relative Markdown links for companion modes and related command pages. `python3 scripts/validate_content.py` checks frontmatter fields/types/enums, filename and mode agreement, command mode pairs, supplied command references, challenge paths, and local Markdown links. It uses only the Python standard library.
+
 ## 1. Voice and teaching approach
 
 - Explain the reason behind a command, not just its syntax.

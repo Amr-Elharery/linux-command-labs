@@ -65,7 +65,13 @@ Recommended content organization:
 - Challenge files reference command IDs.
 - Avoid duplicating command facts between modes. If separate files are used for modes, validate matching IDs and links.
 
-Codex should propose the simplest content structure that supports both GitHub reading and web rendering, then document the decision before populating all labs.
+### Milestone 0 decision
+
+Use plain Markdown with YAML frontmatter. Each command has two companion files in its stage directory: `<command>.detailed.md` and `<command>.revision.md`. Both carry the same stable `id` and stage metadata, plus a `mode` field. This keeps each file directly readable on GitHub and makes mode links explicit without duplicating content in one long page. Challenges live in `content/challenges/`; put solutions in a GitHub-compatible `<details>` block so they are hidden until requested. The web renderer can preserve this reveal behavior.
+
+The required fields and validation rules are specified in `docs/CONTENT_GUIDELINES.md`. Keep YAML to simple scalar values and inline lists for the initial content layer; the metadata validator checks the agreed subset without introducing a dependency.
+
+Course activity mapping remains a source-data issue: the supplied syllabus does not provide the full 41 activity titles or a reliable guided/challenge classification. Preserve each supplied headline and mark the unprovided activity explicitly in `docs/COURSE_MAPPING.md` rather than inferring it.
 
 ## 4. Web stack
 
@@ -112,9 +118,10 @@ Do not treat this example as permission to store sensitive information. Notes ar
 
 ## 6. Playground architecture
 
-- `setup/setup.sh`: create only the known playground structure and sample files.
-- `setup/reset-lab.sh`: reset only generated playground content after confirmation or a clearly documented safe behavior.
-- `setup/verify-environment.sh`: check required tools and report versions.
+- `setup/setup.sh`: create only the known playground structure and deterministic sample files; preserve the existing `playground/logs/app.log` fixture.
+- `setup/reset-lab.sh`: require an interactive yes/no confirmation or explicit `--yes`, remove only the enumerated generated files, and preserve `app.log` and unknown files.
+- `setup/verify-environment.sh`: detect distribution/kernel, check required tools, and report selected versions without installing anything.
+- `scripts/test_playground.sh`: exercise setup/reset in a temporary disposable repository copy, including symlink and out-of-root safety cases.
 - `scripts/`: validation and synthetic-data generation helpers.
 
 Use a repository-root resolution strategy that works regardless of the caller's current directory. Resolve and validate the target path before destructive operations. Refuse to operate if the target is not the expected repository playground directory. Never use `sudo`.

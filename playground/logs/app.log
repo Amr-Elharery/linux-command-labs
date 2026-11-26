@@ -1,0 +1,5 @@
+2025-03-08T09:12:00Z INFO service started
+2025-03-08T09:13:10Z DEBUG cache lookup complete
+2025-03-08T09:14:00Z WARN cache refresh delayed
+2025-03-08T09:15:15Z ERROR request timed out
+2025-03-08T09:16:30Z WARN retry limit approaching

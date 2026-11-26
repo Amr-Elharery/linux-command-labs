@@ -40,7 +40,16 @@ progress/                  Progress template; no personal data committed
 
 ## Local practice setup
 
-The setup scripts are planned for a later milestone. Do not run unreviewed scripts with elevated privileges. The playground must remain self-contained and must never target system directories.
+Prerequisites: Kali Linux or Ubuntu 22.04, Bash, and the commands listed by the environment verifier. Clone this repository, then from any working directory run:
+
+```bash
+git clone <repository-url>
+cd linux-command-labs
+bash setup/verify-environment.sh
+bash setup/setup.sh
+```
+
+The setup creates deterministic synthetic logs, CSV datasets, and project files under `playground/`. It preserves the existing `playground/logs/app.log` sample. No `sudo` or package installation is used. To remove only generated fixtures, run `bash setup/reset-lab.sh` and confirm, or pass `--yes` for a non-interactive reset. Reset preserves `app.log`, unknown files, and the playground directories. See [Playground setup and safety](docs/PLAYGROUND.md) for the full contract and test instructions.
 
 ## Web app
 
@@ -54,7 +63,7 @@ Personal progress must not be uploaded or committed by default.
 
 ## Development status
 
-This starter repository contains product and implementation specifications. It is not yet the completed course or web application.
+Milestones 0 and 1 establish the content schema, representative `grep` tutorial pair, `Log Triage` challenge, and safe local playground scripts. The remaining course pages and web application are planned milestones.
 
 See:
 - [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md)

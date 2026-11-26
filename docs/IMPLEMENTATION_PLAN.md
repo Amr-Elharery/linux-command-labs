@@ -35,6 +35,8 @@ Acceptance:
 - Reset restores known sample state without touching unrelated files.
 - Fixtures are deterministic and contain no real secrets.
 
+Status: scripts and a disposable-copy lifecycle test are implemented. The lifecycle test is pending execution in a Linux shell; the current Windows environment has no WSL distribution with `/bin/bash`, and Git Bash could not initialize. The Python content validator passed. See `docs/PLAYGROUND.md` for the safety contract.
+
 ## Milestone 2 — Stage 01 content
 
 Tasks:
@@ -114,7 +116,7 @@ Tasks:
 
 Acceptance:
 - All 41 source activities are accounted for or discrepancies documented.
-- All 25 commands have both learning modes.
+- All 31 commands have both learning modes.
 - Setup and reset instructions are verified.
 - No credentials, personal logs, or local progress are committed.
 

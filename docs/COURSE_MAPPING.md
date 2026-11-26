@@ -1,48 +1,25 @@
 # Original Course Mapping
 
-This document maps the supplied course syllabus into the Linux Labs curriculum. The course description states 31 guided labs and 10 challenges (41 activities), but the supplied headline list does not explicitly enumerate all 41 titles. Do not infer missing activity titles.
+The source course description reports **31 guided labs and 10 challenges (41 activities)**. The supplied project brief provides the command lists below and a set of 9 named combined scenario headlines, but it does not supply a numbered activity list or classify each headline as a guided lab or challenge. The mapping therefore preserves the given titles and marks uncertain assignments rather than manufacturing a 41-row syllabus.
 
-| Stage | Command/topic | Supplied challenge/scenario headline |
+## Stage and command coverage
+
+| Stage | Supplied commands/topics | Named supplied activity headline(s) |
 |---|---|---|
-| File System Operations | `ls` | Content Listing |
-| File System Operations | `pwd` | Directory Displaying |
-| File System Operations | `cd` | Directory Changing |
-| File System Operations | `mkdir` | Directory Creating |
-| File System Operations | `mkdir` / structure | Setting Up a New Project Structure |
-| File System Operations | `cp` | File Copying |
-| File System Operations | `mv` | File Moving and Renaming |
-| File System Operations | `rm` | File Removing |
-| File System Operations | combined | Organizing Files and Directories |
-| File Content Operations | `cat` | File Concatenating |
-| File Content Operations | `more` | File Scrolling |
-| File Content Operations | `less` | File Paging |
-| File Content Operations | combined | Viewing Log and Configuration Files in Linux |
-| File Content Operations | `head` | File Beginning Display |
-| File Content Operations | `tail` | File End Display |
-| File Content Operations | `nl` | Line Numbering |
-| File Content Operations | combined | Rapid Threat Detection |
-| File Search | `which` | Command Locating |
-| File Search | `whereis` | File and Command Finding |
-| File Search | `find` | File Searching |
-| File Search | combined | Discover Critical System Resources |
-| Text Processing | `grep` | Pattern Searching |
-| Text Processing | combined | Needle in the Haystack |
-| Text Processing | `wc` | Text Counting |
-| Text Processing | `cut` | Text Cutting |
-| Text Processing | `sort` | Text Sorting |
-| Text Processing | `uniq` | Duplicate Filtering |
-| Text Processing | `tr` | Character Translating |
-| Text Processing | `diff` | File Comparing |
-| Text Processing | `join` | File Joining |
-| Text Processing | `xargs` | Command Building |
-| Text Processing | `awk` | Text Processing |
-| Text Processing | combined | Word Count and Sorting |
-| Text Processing | combined | Processing Employees Data |
-| System Information | `top` | Real-time System Monitoring |
-| System Information | `free` | Monitoring System Memory |
-| System Information | `df` | Disk Space Reporting |
-| System Information | `du` | File Space Estimating |
-| System Information | combined | Disk Usage Detective |
-| System Information | `time` | Command Timing |
+| 01 — File System Operations | `ls`, `pwd`, `cd`, `mkdir`, `cp`, `mv`, `rm` | Content Listing; Directory Displaying; Directory Changing; Directory Creating; Setting Up a New Project Structure; File Copying; File Moving and Renaming; File Removing; Organizing Files and Directories |
+| 02 — File Content Operations | `cat`, `more`, `less`, `head`, `tail`, `nl` | File Concatenating; File Scrolling; File Paging; Viewing Log and Configuration Files in Linux; File Beginning Display; File End Display; Line Numbering; Rapid Threat Detection |
+| 03 — File Search | `which`, `whereis`, `find` | Command Locating; File and Command Finding; File Searching; Discover Critical System Resources |
+| 04 — Text Processing | `grep`, `wc`, `cut`, `sort`, `uniq`, `tr`, `diff`, `join`, `xargs`, `awk` | Pattern Searching; Needle in the Haystack; Text Counting; Text Cutting; Text Sorting; Duplicate Filtering; Character Translating; File Comparing; File Joining; Command Building; Text Processing; Word Count and Sorting; Processing Employees Data |
+| 05 — System Information | `top`, `free`, `df`, `du`, `time` | Real-time System Monitoring; Monitoring System Memory; Disk Space Reporting; File Space Estimating; Disk Usage Detective; Command Timing |
 
-**Important:** This visible mapping contains 40 listed rows, counting command/topic and scenario headlines as rows; it is not a verified 41-activity enumeration. The project must reconcile this against the original course page or user-provided complete activity list before claiming exact activity parity. There are 25 distinct commands across the five stages.
+## Activity reconciliation
+
+| Source fact | Status | Notes |
+|---|---|---|
+| 31 distinct commands across five stages | Mapped | All command names in the supplied scope appear above. |
+| 9 named combined scenario headlines | Mapped as supplied | Headline-to-command associations follow the source brief's existing suggestions; combined scenarios are identified as combined by their multi-command nature. |
+| 31 guided labs | Not individually enumerated | No authoritative title list or guided-lab classification was supplied. |
+| 10 challenges | Not individually enumerated | The brief names challenge-like scenarios but does not identify which ten are the source challenges. |
+| 41 total activities | Unresolved discrepancy | The available headline list yields 40 topic/headline rows in the earlier draft, not an authoritative 41-activity enumeration. The count cannot be reconstructed reliably by counting commands, topics, or scenario headlines. |
+
+**Missing source material:** a numbered list of all 41 activities, including each title and whether it is a guided lab or challenge. Until that is supplied, Linux Labs will map all known command coverage and preserve known headline names, but will not claim one-to-one activity parity. The representative `Log Triage` challenge created for this repository is original sample content; it is not asserted to be a source-course activity.
