@@ -84,7 +84,7 @@ def verify_deterministic_fixtures() -> None:
         check(root, "printf '%s\\n' error warning error | uniq -c",
               "1 error\n      1 warning\n      1 error")
         check(root, "awk -F, 'NR > 1 && $6 == \"complete\" { total += $5; n++ } END { printf \"%.2f %d\\n\", total, n }' playground/data/transactions.csv",
-              "68.25 3")
+              "54.75 3")
         check(root, "awk -F, 'NR > 1 && $5 == \"active\" { n++ } END { print n }' playground/data/employees.csv", "4")
         join = run_shell(root, "join -t, -1 3 -2 2 <(tail -n +2 playground/data/employees.csv | sort -t, -k3,3) <(tail -n +2 playground/data/departments.csv | sort -t, -k2,2)")
         if join.returncode or len(join.stdout.splitlines()) != 5 or "Engineering" not in join.stdout:

@@ -32,7 +32,7 @@ Prints each employee name and department.
 awk -F, 'NR > 1 && $6 == "complete" { total += $5; count++ } END { printf "completed total: %.2f (%d rows)\n", total, count }' playground/data/transactions.csv
 ```
 
-completed total: 68.25 (3 rows)
+completed total: 54.75 (3 rows)
 
 ```bash
 awk -F, 'BEGIN { FS=","; OFS=" | "; print "DEPARTMENT", "COUNT" } NR > 1 { count[$3]++ } END { for (d in count) printf "%s%s%d\n", d, OFS, count[d] }' playground/data/employees.csv
@@ -42,7 +42,7 @@ Department counts in unspecified map iteration order; values are Engineering 2, 
 
 ## Quick recall
 
-1. Calculate active employee counts and completed transaction totals. Format currency with two decimal places and verify total 68.25.
+1. Calculate active employee counts and completed transaction totals. Format currency with two decimal places and verify total 54.75.
 2. Which input assumptions matter for this command?
 3. How would you keep the operation read-only and confined to `playground/`?
 

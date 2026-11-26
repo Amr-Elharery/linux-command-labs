@@ -99,16 +99,23 @@ Acceptance:
 - Pipeline concepts, sort/join prerequisites, safe `xargs`, awk calculations, and CSV limitations are covered.
 - Tests leave the source playground unchanged and assert deterministic output.
 
-Status: Implementation complete; Stage 05 example runner and full regression suite are pending execution. See `scripts/test_stage05_examples.py`.
+Status: Complete. The text-processing runner passed all 76 Bash blocks plus deterministic grep/wc/cut/sort/uniq/awk/join, sorted-join, NUL-safe xargs, and source-playground integrity checks. The content validator and playground, Stage 01, Stage 02, and Stage 03 suites also passed in Ubuntu WSL. See `scripts/test_stage05_examples.py`.
 
 ## Milestone 6 — Stage 05 system information
 
-Complete `top`, `free`, `df`, `du`, and `time`.
+Tasks:
+- Create Detailed and Revision guides for `top`, `free`, `df`, `du`, and `time`.
+- Add the cumulative Disk Usage Detective challenge.
+- Test examples in isolated fixture copies without fixed assertions for dynamic metrics or timing.
+- Compare `du` apparent bytes with stable synthetic fixture sizes.
 
 Acceptance:
 - Explain host-level versus playground-level observations.
 - Avoid brittle expected values for live system metrics.
 - Use `du` on repository playground for deterministic exercises where possible.
+- Bound non-interactive `top` and verify time output format without asserting measurements.
+
+Status: Complete. All 36 system-information Bash examples passed in Ubuntu WSL. Structural checks passed for batch `top`, `free`, and `df`; deterministic `du` byte/sort checks and the timing-format check passed without fixed metric or duration assertions. The source playground remained unchanged. See `scripts/test_stage06_examples.py`.
 
 ## Milestone 7 — Web portal V1
 

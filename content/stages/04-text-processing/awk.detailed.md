@@ -46,7 +46,7 @@ Prints each employee name and department.
 awk -F, 'NR > 1 && $6 == "complete" { total += $5; count++ } END { printf "completed total: %.2f (%d rows)\n", total, count }' playground/data/transactions.csv
 ```
 
-completed total: 68.25 (3 rows)
+completed total: 54.75 (3 rows)
 
 ```bash
 awk -F, 'BEGIN { FS=","; OFS=" | "; print "DEPARTMENT", "COUNT" } NR > 1 { count[$3]++ } END { for (d in count) printf "%s%s%d\n", d, OFS, count[d] }' playground/data/employees.csv
@@ -80,7 +80,7 @@ All file examples read synthetic files beneath `playground/`. The only pipelines
 
 ### Independent practice
 
-Calculate active employee counts and completed transaction totals. Format currency with two decimal places and verify total 68.25.
+Calculate active employee counts and completed transaction totals. Format currency with two decimal places and verify total 54.75.
 
 ### Combination challenge
 

@@ -49,7 +49,7 @@
 - [ ] `df`
 - [ ] `du`
 - [ ] `time`
-- [ ] Stage challenge
+- [ ] [Disk Usage Detective challenge](../content/challenges/disk-usage-detective.md)
 
 ## Final assessment
 - [ ] Completed

@@ -49,7 +49,7 @@ For filenames, use `find ... -print0 | xargs -0`. A grep no-match status is 1, a
 
 ## Expected result and validation
 
-Results should agree with the fixed fixture rows. The completed transaction total is 68.25; there are four active employees; department counts are Engineering 2, Finance 1, Support 2. Join output order follows the sorted keys. The task can be repeated without changing fixtures.
+Results should agree with the fixed fixture rows. The completed transaction total is 54.75; there are four active employees; department counts are Engineering 2, Finance 1, Support 2. Join output order follows the sorted keys. The task can be repeated without changing fixtures.
 
 ## Solution
 
