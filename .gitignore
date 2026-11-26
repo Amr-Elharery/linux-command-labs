@@ -1,0 +1,30 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Local editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local personal progress and exports
+progress/local-progress.json
+progress/*.private.json
+*.progress-export.json
+
+# Temporary playground artifacts
+playground/tmp/
+playground/.local/
+*.swp
+*.bak
