@@ -24,6 +24,7 @@ Generated fixtures include:
 - `playground/logs/auth.log`: synthetic authentication events using documentation-only IP ranges; it contains no passwords or credentials.
 - `playground/data/employees.csv`, `transactions.csv`, and `departments.csv`: small fictional datasets.
 - `playground/projects/atlas/`: text and configuration-like files with no secrets.
+- `playground/projects/organization-lab/`: marked disposable workspace for Stage 01; reset removes the entire workspace and setup rebuilds its starter files.
 - `playground/backups/atlas-backup-note.txt`: a text-only sample backup note.
 
 ## Reset
@@ -34,7 +35,7 @@ bash setup/reset-lab.sh
 bash setup/reset-lab.sh --yes
 ```
 
-The interactive form defaults to cancel. `--yes` is the explicit confirmation for automated use. Reset validates the physical repository and playground paths, rejects symlinked managed paths, unlinks only its enumerated generated files, and attempts to remove only empty sample project subdirectories. It preserves `app.log`, top-level playground directories, and any unrecognized files. It never uses `sudo` and never targets system paths.
+The interactive form defaults to cancel. `--yes` is the explicit confirmation for automated use. Reset validates the physical repository and playground paths, rejects symlinked managed paths, unlinks its enumerated generated files, and removes the dedicated `playground/projects/organization-lab/` workspace only when its fixed marker matches. It preserves `app.log`, top-level playground directories, and any unrecognized files elsewhere. The organization workspace is intentionally disposable; do not store personal files there. Reset never uses `sudo` and never targets system paths.
 
 ## Safety boundaries
 
@@ -58,4 +59,10 @@ Run playground lifecycle checks in a disposable temporary copy:
 bash scripts/test_playground.sh
 ```
 
-The lifecycle test checks two consecutive setup runs, preservation of `app.log`, generated fixture contents, reset followed by setup from another working directory, preservation of an unrelated file, rejection of symlinked playground/subdirectory/fixture paths, and safe replacement of a hard-linked fixture. It creates and removes only its own temporary test directory.
+Run every Bash-fenced Stage 01 tutorial and challenge solution in isolated fixture copies:
+
+```bash
+python3 scripts/test_stage01_examples.py
+```
+
+The lifecycle test checks two consecutive setup runs, preservation of `app.log`, generated fixture contents, reset followed by setup from another working directory, preservation of an unrelated file, removal and restoration of the organization workspace, rejection of symlinked playground/subdirectory/fixture paths, and safe replacement of a hard-linked fixture. It creates and removes only its own temporary test directory.

@@ -35,7 +35,7 @@ Acceptance:
 - Reset restores known sample state without touching unrelated files.
 - Fixtures are deterministic and contain no real secrets.
 
-Status: scripts and a disposable-copy lifecycle test are implemented. The lifecycle test is pending execution in a Linux shell; the current Windows environment has no WSL distribution with `/bin/bash`, and Git Bash could not initialize. The Python content validator passed. See `docs/PLAYGROUND.md` for the safety contract.
+Status: approved. Setup/reset passed 13 checks in the disposable-copy suite on Ubuntu 26.04 WSL2, including idempotency, path/symlink handling, and challenge-workspace restoration. See `docs/PLAYGROUND.md` for the safety contract.
 
 ## Milestone 2 — Stage 01 content
 
@@ -50,6 +50,8 @@ Acceptance:
 - Exercises are executable and resettable.
 - Safety guidance for `rm`, `cp`, and `mv` is present.
 - Examples are tested or clearly labeled illustrative.
+
+Status: Detailed and Revision pages for all seven commands, the stage README, and the cumulative `directory-organization` challenge are authored. All 50 fenced Bash blocks passed in isolated playground copies on Ubuntu 26.04 WSL2. The reset workflow restores the dedicated marked practice workspace. See `scripts/test_stage01_examples.py` for the executable-example check.
 
 ## Milestone 3 — Stages 02 and 03
 

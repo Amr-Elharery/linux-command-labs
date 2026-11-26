@@ -119,7 +119,7 @@ Do not treat this example as permission to store sensitive information. Notes ar
 ## 6. Playground architecture
 
 - `setup/setup.sh`: create only the known playground structure and deterministic sample files; preserve the existing `playground/logs/app.log` fixture.
-- `setup/reset-lab.sh`: require an interactive yes/no confirmation or explicit `--yes`, remove only the enumerated generated files, and preserve `app.log` and unknown files.
+- `setup/reset-lab.sh`: require an interactive yes/no confirmation or explicit `--yes`, remove only enumerated generated files plus the single marker-validated `playground/projects/organization-lab/` disposable tree, and preserve `app.log` and unknown files elsewhere.
 - `setup/verify-environment.sh`: detect distribution/kernel, check required tools, and report selected versions without installing anything.
 - `scripts/test_playground.sh`: exercise setup/reset in a temporary disposable repository copy, including symlink and out-of-root safety cases.
 - `scripts/`: validation and synthetic-data generation helpers.

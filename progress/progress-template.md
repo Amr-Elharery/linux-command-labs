@@ -10,7 +10,7 @@
 - [ ] `cp`
 - [ ] `mv`
 - [ ] `rm`
-- [ ] Stage challenge
+- [ ] [Directory Organization challenge](../content/challenges/directory-organization.md)
 
 ## Stage 02 — File Content Operations
 - [ ] `cat`

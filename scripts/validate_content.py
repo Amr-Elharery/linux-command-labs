@@ -54,7 +54,9 @@ def parse_frontmatter(path: Path) -> tuple[dict[str, object], str]:
 
 def main() -> int:
     errors: list[str] = []
-    pages = sorted(CONTENT.rglob("*.md"))
+    # README files describe folders rather than individual content records and
+    # intentionally do not carry content frontmatter.
+    pages = sorted(path for path in CONTENT.rglob("*.md") if path.name.lower() != "readme.md")
     by_command: dict[str, set[str]] = {}
     for path in pages:
         rel = path.relative_to(ROOT).as_posix()

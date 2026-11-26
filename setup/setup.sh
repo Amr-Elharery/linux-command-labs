@@ -13,12 +13,15 @@ fail() { printf 'setup: %s\n' "$*" >&2; exit 1; }
 [[ "$(realpath -m -- "$PLAYGROUND")" == "$REPO_ROOT/playground" ]] || fail "playground path failed validation"
 
 for relative in playground playground/logs playground/data playground/projects playground/backups \
-  playground/projects/atlas playground/projects/atlas/src playground/projects/atlas/config; do
+  playground/projects/atlas playground/projects/atlas/src playground/projects/atlas/config \
+  playground/projects/organization-lab; do
   path="$REPO_ROOT/$relative"
   [[ ! -L "$path" ]] || fail "refusing symlinked managed path: $path"
   if [[ -e "$path" && ! -d "$path" ]]; then fail "expected a directory: $path"; fi
 done
-
+ORG_WORKSPACE="$PLAYGROUND/projects/organization-lab"
+[[ ! -L "$ORG_WORKSPACE" ]] || fail "refusing symlinked disposable workspace: $ORG_WORKSPACE"
+[[ "$(realpath -m -- "$ORG_WORKSPACE")" == "$PLAYGROUND/projects/organization-lab" ]] || fail "disposable workspace path failed validation"
 managed_files=(
   logs/app.log logs/auth.log data/employees.csv data/transactions.csv data/departments.csv
   projects/atlas/README.md projects/atlas/src/README.txt projects/atlas/src/tasks.txt
@@ -30,8 +33,18 @@ for relative in "${managed_files[@]}"; do
   if [[ -e "$path" && ! -f "$path" ]]; then fail "expected a regular fixture file: $path"; fi
 done
 
+if [[ -e "$ORG_WORKSPACE" ]]; then
+  [[ -d "$ORG_WORKSPACE" ]] || fail "expected a disposable workspace directory: $ORG_WORKSPACE"
+  marker="$ORG_WORKSPACE/.linux-labs-reset-marker"
+  [[ ! -L "$marker" && -f "$marker" ]] || fail "refusing to reset workspace without its regular marker: $marker"
+  [[ "$(cat -- "$marker")" == 'linux-command-labs: organization-lab: disposable' ]] || fail "workspace marker mismatch: $marker"
+  # This named workspace is explicitly disposable and restored by setup.
+  rm -rf -- "$ORG_WORKSPACE"
+fi
+
 mkdir -p -- "$PLAYGROUND/logs" "$PLAYGROUND/data" "$PLAYGROUND/projects/atlas/src" \
-  "$PLAYGROUND/projects/atlas/config" "$PLAYGROUND/backups"
+  "$PLAYGROUND/projects/atlas/config" "$PLAYGROUND/backups" \
+  "$ORG_WORKSPACE/inbox" "$ORG_WORKSPACE/reference"
 
 write_fixture() {
   local relative="$1"
@@ -128,6 +141,32 @@ Synthetic backup note
 Project: atlas-demo
 Snapshot: sample-01
 Contents: text fixtures only
+EOF
+
+write_fixture projects/organization-lab/.linux-labs-reset-marker <<'EOF'
+linux-command-labs: organization-lab: disposable
+EOF
+
+write_fixture 'projects/organization-lab/inbox/quarterly report.txt' <<'EOF'
+Quarterly report — synthetic sample
+Project: atlas-demo
+Status: draft
+Next step: review the launch checklist
+EOF
+
+write_fixture projects/organization-lab/inbox/launch-checklist.txt <<'EOF'
+Confirm project folder is organized
+Review synthetic sample report
+Archive the approved copy
+EOF
+
+write_fixture projects/organization-lab/inbox/.draft-note <<'EOF'
+Hidden practice file: inspect with ls -a.
+EOF
+
+write_fixture projects/organization-lab/reference/README.txt <<'EOF'
+Disposable filesystem practice workspace.
+Reset it with: bash setup/reset-lab.sh --yes && bash setup/setup.sh
 EOF
 
 printf 'Playground fixtures are ready at %s\n' "$PLAYGROUND"

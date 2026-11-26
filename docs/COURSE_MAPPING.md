@@ -23,3 +23,7 @@ The source course description reports **31 guided labs and 10 challenges (41 act
 | 41 total activities | Unresolved discrepancy | The available headline list yields 40 topic/headline rows in the earlier draft, not an authoritative 41-activity enumeration. The count cannot be reconstructed reliably by counting commands, topics, or scenario headlines. |
 
 **Missing source material:** a numbered list of all 41 activities, including each title and whether it is a guided lab or challenge. Until that is supplied, Linux Labs will map all known command coverage and preserve known headline names, but will not claim one-to-one activity parity. The representative `Log Triage` challenge created for this repository is original sample content; it is not asserted to be a source-course activity.
+
+## Linux Labs authored additions
+
+Milestone 2 adds [`Directory Organization`](../content/challenges/directory-organization.md), an original cumulative practice challenge combining `ls`, `pwd`, `cd`, `mkdir`, `cp`, `mv`, and `rm`. It is project-authored content and does not fill the outstanding source-course activity discrepancy.

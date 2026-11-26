@@ -1,0 +1,4 @@
+Quarterly report — synthetic sample
+Project: atlas-demo
+Status: draft
+Next step: review the launch checklist

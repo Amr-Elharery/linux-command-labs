@@ -25,12 +25,20 @@ if [[ -e "$PLAYGROUND/logs/app.log" && ! -f "$PLAYGROUND/logs/app.log" ]]; then
   fail "expected a regular preserved fixture: $PLAYGROUND/logs/app.log"
 fi
 
-managed_dirs=(logs data projects backups projects/atlas projects/atlas/src projects/atlas/config)
+managed_dirs=(logs data projects backups projects/atlas projects/atlas/src projects/atlas/config projects/organization-lab)
 for relative in "${managed_dirs[@]}"; do
   path="$PLAYGROUND/$relative"
   [[ ! -L "$path" ]] || fail "refusing symlinked managed path: $path"
   if [[ -e "$path" && ! -d "$path" ]]; then fail "expected a directory: $path"; fi
 done
+
+ORG_WORKSPACE="$PLAYGROUND/projects/organization-lab"
+if [[ -e "$ORG_WORKSPACE" ]]; then
+  [[ "$(realpath -m -- "$ORG_WORKSPACE")" == "$PLAYGROUND/projects/organization-lab" ]] || fail "disposable workspace path failed validation"
+  marker="$ORG_WORKSPACE/.linux-labs-reset-marker"
+  [[ ! -L "$marker" && -f "$marker" ]] || fail "refusing to remove workspace without its regular marker: $marker"
+  [[ "$(cat -- "$marker")" == 'linux-command-labs: organization-lab: disposable' ]] || fail "workspace marker mismatch: $marker"
+fi
 
 # Remove only fixtures owned by setup. app.log is the original tracked fixture
 # and is deliberately retained. rm unlinks a path itself; it never follows it,
@@ -51,6 +59,12 @@ for relative in "${managed_files[@]}"; do
   [[ ! -L "$path" ]] || fail "refusing symlinked fixture: $path"
   if [[ -e "$path" && ! -f "$path" ]]; then fail "expected a regular fixture file: $path"; fi
 done
+
+if [[ -d "$ORG_WORKSPACE" ]]; then
+  # This single marker-protected directory is a documented disposable lab area.
+  # rm does not follow nested symlinks; the workspace root itself was validated.
+  rm -rf -- "$ORG_WORKSPACE"
+fi
 
 for relative in "${managed_files[@]}"; do
   path="$PLAYGROUND/$relative"
