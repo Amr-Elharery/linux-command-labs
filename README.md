@@ -53,17 +53,22 @@ The setup creates deterministic synthetic logs, CSV datasets, and project files 
 
 ## Web app
 
-The web app is a presentation layer over `content/`. It should provide:
-- public tutorials, learning paths, command search, and challenges;
-- Detailed/Revision mode navigation;
-- locally stored progress, bookmarks, notes, and quiz results;
-- responsive design and first-class light/dark themes.
+The web app renders the Markdown in `content/` directly. With Node.js 20.9 or newer and npm installed:
+
+```bash
+git clone <repository-url>
+cd linux-command-labs/apps/web
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Next.js (normally `http://localhost:3000`). Use `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build` to validate changes. Personal progress, bookmarks, notes, challenge scores, and theme preference stay in browser localStorage; use My workspace to export or import a JSON backup. No account or server-side personal profile is used.
 
 Personal progress must not be uploaded or committed by default.
 
 ## Development status
 
-Milestones 0–4 establish the content schema, safe playground, and Stage 01–03 command content. Milestone 5 adds validated Stage 04 text-processing lessons and challenges. Milestone 6 adds validated Stage 05 system-information lessons and the Disk Usage Detective challenge. The web application remains unstarted.
+Milestones 0–6 establish the content schema, safe playground, and all five command stages. Milestone 7 delivers the web portal and browser-local personal workspace. The integrated final assessment and release preparation remain Milestone 8.
 
 See:
 - [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md)

@@ -1,0 +1,3 @@
+import { WorkspaceOverview } from "@/components/workspace-overview";
+import { loadCatalog } from "@/lib/content";
+export default function WorkspacePage(){const {commands,challenges,stages}=loadCatalog();return <div className="space-y-6"><header><p className="text-xs font-bold uppercase tracking-[.15em] text-primary">Personal learning data</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">My workspace</h1><p className="mt-2 text-muted-foreground">Progress, bookmarks, notes, and self-scores saved locally in this browser.</p></header><WorkspaceOverview commands={commands} challenges={challenges} stages={stages}/></div>}

@@ -35,7 +35,7 @@ linux-command-labs/
 ├── CODEX_INSTRUCTIONS.md
 ├── CONTRIBUTING.md
 ├── .gitignore
-└── package.json                 # only if workspace tooling is justified
+└── apps/web/package.json        # isolated web dependencies
 ```
 
 Do not create empty placeholder files for every future lab. Create folders and representative examples only when they help establish the conventions.
@@ -83,10 +83,14 @@ Preferred:
 - Markdown/MDX content loader with frontmatter validation.
 - Static generation for public content wherever possible.
 
-Avoid adding a CMS or database in V1.
+V1 is implemented in `apps/web`: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui primitives, React Markdown with GFM, gray-matter frontmatter parsing, and Zod validation. `lib/content.ts` discovers stage READMEs, Detailed/Revision pairs, and challenge files from the repository. It validates stable IDs, matching metadata, stage placement, prerequisites, and challenge starter paths; malformed content fails loudly instead of disappearing from the interface.
+
+Routes include the dashboard, stage index/detail, searchable command library, both guide modes, challenge index/detail, and personal workspace. Dynamic route parameters are checked against the discovered catalog. Markdown is sanitized before rendering; the sanitizer retains GitHub-compatible `details`/`summary` solution blocks and local Markdown links are mapped to application routes. The app reads the repository content at build/runtime and does not keep a second copy of lesson text.
+
+V1 runs with `next dev` / `next start`; static export is not configured because the content loader reads repository files and the deployment contract has not yet been selected. Avoid adding a CMS or database in V1.
 
 ### Deployment consideration
-Keep the app compatible with static export if practical, so GitHub Pages remains an option. Vercel is also acceptable. Avoid server-only features that create unnecessary deployment lock-in.
+V1 prerenders content routes but is configured for the Next.js server runtime, not `output: export`. Deployment remains a Milestone 8 decision; avoid server-only features beyond repository content discovery that would create unnecessary lock-in.
 
 ## 5. Progress storage
 
@@ -114,7 +118,7 @@ type ProgressState = {
 };
 ```
 
-Do not treat this example as permission to store sensitive information. Notes are user-controlled local content.
+Do not treat this example as permission to store sensitive information. Notes are user-controlled local content. The app stores schema version 1 under `linux-labs.workspace.v1`. It validates and filters records against the current command/challenge catalog, supports the previous `completedItems` shape, and preserves unsupported future versions rather than overwriting them. Corrupt data opens with safe defaults and a recovery notice. Users can export/import a JSON copy and use a confirmation dialog before clearing data. Theme initialization reads the stored preference before paint to reduce theme flash.
 
 ## 6. Playground architecture
 
@@ -131,7 +135,7 @@ Use a repository-root resolution strategy that works regardless of the caller's 
 - No shell execution in the browser.
 - No terminal websocket or exposed local daemon.
 - No secrets or personal logs in fixtures.
-- Escape rendered content and validate metadata.
+- Sanitize rendered Markdown HTML and validate metadata/starter paths.
 - Treat Markdown as content, not executable trusted HTML.
 - Keep dependencies current and minimal.
 - Do not add analytics or third-party tracking by default.

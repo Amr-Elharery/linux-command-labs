@@ -1,0 +1,3 @@
+import { ChallengeExplorer } from "@/components/challenge-explorer";
+import { loadCatalog } from "@/lib/content";
+export default function ChallengesPage(){const {challenges,stages}=loadCatalog();return <div className="space-y-6"><header><p className="text-xs font-bold uppercase tracking-[.15em] text-primary">Practice lab</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">Challenges</h1><p className="mt-2 text-muted-foreground">Apply command-line skills to realistic synthetic files. Your checkmarks and scores stay in this browser.</p></header><ChallengeExplorer challenges={challenges} stages={stages}/></div>}

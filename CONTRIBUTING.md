@@ -19,6 +19,8 @@ Thanks for improving Linux Labs.
 - Keep dependencies minimal.
 - Add or update tests for changed behavior.
 - Update docs when workflows or schemas change.
+- For web work, use Node.js 20.9+ and run commands from `apps/web`: `npm ci`, `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build`.
+- Do not commit localStorage exports, browser profiles, or personal progress.
 
 ## Suggested commit messages
 

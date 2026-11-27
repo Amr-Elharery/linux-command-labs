@@ -117,35 +117,28 @@ Acceptance:
 
 Status: Complete. All 36 system-information Bash examples passed in Ubuntu WSL. Structural checks passed for batch `top`, `free`, and `df`; deterministic `du` byte/sort checks and the timing-format check passed without fixed metric or duration assertions. The source playground remained unchanged. See `scripts/test_stage06_examples.py`.
 
-## Milestone 7 — Web portal V1
+## Milestone 7 — Web portal & personal workspace
 
 Tasks:
 - Scaffold Next.js App Router, TypeScript, Tailwind, and selected UI components.
 - Build content loader and validate metadata.
-- Add home, learning path, stage, command, challenge, and cheat-sheet views.
+- Add home, learning path, stage, command, challenge, and workspace views.
 - Add Detailed/Revision switch.
 - Add search and responsive light/dark themes.
+- Add versioned browser-local progress, bookmarks, notes, recent activity, and challenge results.
+- Add validated JSON import/export, recovery/migration handling, and confirmed reset.
 
 Acceptance:
 - Website renders repository content, not duplicated hardcoded lessons.
 - Public content works without login.
+- Personal data survives reloads in the same browser and is never sent to a backend.
+- Invalid imports are rejected; users can back up and clear browser-local data.
 - Keyboard navigation and semantic structure are reasonable.
 - Build and lint/type checks pass.
 
-## Milestone 8 — Personal workspace
+Status: Implemented. The portal discovers the five stage READMEs, all 31 Detailed/Revision pairs, and nine challenge files directly from the repository. Workspace state is browser-local with validation, migration, export/import, recovery, and confirmed reset. Unit tests, lint, and typecheck passed. One production build completed and prerendered all routes; a subsequent retry hit a Windows sandbox `EPERM` while writing generated route files. The Linux content validator and WSL suites could not run because this host has no accessible Linux shell.
 
-Tasks:
-- Add local progress, bookmarks, notes, recent activity, quiz results.
-- Add export/import with schema validation.
-- Add clear personal data control.
-
-Acceptance:
-- Data persists across reloads in the same browser.
-- No personal data is transmitted to a backend.
-- Invalid imports are rejected safely.
-- UI explains browser/device-local behavior.
-
-## Milestone 9 — Final assessment and release
+## Milestone 8 — Final assessment and release
 
 Tasks:
 - Build integrated assessment across all five stages.
