@@ -133,7 +133,7 @@ export function AssessmentPlayer({ assessment, initialAttemptId }: { assessment:
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-sm font-semibold">Attempt in progress</p>
-              <p className="text-xs text-muted-foreground">{progressCount} of {allTasks.length} tasks submitted. You can leave and resume later.</p>
+              <p role="status" aria-live="polite" aria-atomic="true" className="text-xs text-muted-foreground">{progressCount} of {allTasks.length} tasks submitted. You can leave and resume later.</p>
             </div>
             <Badge variant="secondary">Started {new Date(attempt.startedAt).toLocaleString()}</Badge>
           </div>
@@ -161,6 +161,7 @@ export function AssessmentPlayer({ assessment, initialAttemptId }: { assessment:
         <section className="space-y-5" aria-labelledby="assessment-results">
           <Card className={completedAttempt.passed ? "border-primary/40 bg-primary/5" : "border-amber-500/40 bg-amber-500/5"}>
             <CardContent className="p-5 sm:p-7">
+              <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">Assessment {completedAttempt.passed ? "passed" : "not passed"}. Score: {completedAttempt.score} out of 100.</p>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div><p className="text-xs font-bold uppercase tracking-[.15em] text-primary">Attempt result</p><h2 id="assessment-results" className="mt-2 text-2xl font-semibold">{completedAttempt.passed ? "Assessment passed" : "Keep practicing and try again"}</h2></div>
                 <p className="font-mono text-4xl font-bold">{completedAttempt.score}<span className="text-xl text-muted-foreground">/100</span></p>
