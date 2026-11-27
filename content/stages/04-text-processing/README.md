@@ -2,6 +2,8 @@
 
 Use small tools in pipelines to search, count, extract, sort, compare, join, and summarize synthetic text and data.
 
+**Quick reference:** [Text Processing Cheat Sheet](../../cheatsheets/04-text-processing.md).
+
 ## Commands
 
 - [`grep` Detailed](./grep.detailed.md) · [Revision](./grep.revision.md)

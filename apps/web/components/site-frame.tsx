@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Bookmark, ClipboardCheck, Command, House, Layers3, Terminal } from "lucide-react";
+import { BookMarked, BookOpen, Bookmark, ClipboardCheck, Command, House, Layers3, Terminal } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useWorkspace } from "@/components/workspace-provider";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ const links = [
   { href: "/", label: "Overview", icon: House },
   { href: "/paths", label: "Learning paths", icon: Layers3 },
   { href: "/commands", label: "Commands", icon: Command },
+  { href: "/cheatsheets", label: "Cheat Sheets", icon: BookMarked },
   { href: "/challenges", label: "Challenges", icon: BookOpen },
   { href: "/assessment", label: "Assessment", icon: ClipboardCheck },
   { href: "/workspace", label: "My workspace", icon: Bookmark },

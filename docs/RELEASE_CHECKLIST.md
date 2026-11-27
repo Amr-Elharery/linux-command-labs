@@ -1,22 +1,22 @@
 # First Public Release Checklist
 
-**Current disposition: NO-GO.** No repository has been published and no site has been deployed. This checklist records the final QA attempt on 2026-11-27; blocked checks are not marked as passed.
+**Current disposition: NO-GO.** No repository has been published and no site has been deployed. This checklist records the release QA and cheat-sheet implementation; blocked checks are not marked as passed.
 
 ## Project and content
 
 - [x] Canonical command lessons remain under `content/stages/` and render from the repository.
 - [x] Five stages, 31 command pairs, nine authored challenges, and the final assessment are implemented.
+- [x] Five concise stage cheat sheets cover all 31 commands; `/cheatsheets` and `/cheatsheets/[id]` provide an index and stage navigation.
 - [x] The discrepancy between the stated 41 source-course activities and the incomplete numbered source list is documented in `docs/COURSE_MAPPING.md`. No activity has been invented to fill it.
 - [x] Playground setup, reset, environment prerequisites, and safety boundaries are documented and the safety code was reviewed.
 - [ ] Run the content validator and playground/Stage 01–06 regression suites on Linux. WSL returned `E_ACCESSDENIED`; an approved retry could not start `bash` because the available WSL distribution has no executable bash. Docker Desktop has no running Linux engine.
-- [ ] Implement and expose cheat sheets. This is required by V1: `docs/PROJECT_SPEC.md` section 7 lists “Cheat sheets and final assessment” in the public site scope. No cheat sheets or application route are present. Re-scope only with an explicit project-owner decision.
 - [ ] Obtain the authoritative numbered list of all source-course activities if one exists. Continue to describe the mapping discrepancy without inventing activities.
 
 ## Web app, clean install, and privacy
 
 - [x] `apps/web/package-lock.json` is tracked by Git; its v3 root package name/version match the manifest, and `npm ci --ignore-scripts --dry-run --offline --no-audit --no-fund` exited 0 with an install plan. The lockfile is consistent, but the dry-run is not a clean install.
 - [ ] Complete a clean `npm ci`. In-place attempts failed because Windows denied unlinking the native `lightningcss` binary. A fresh temporary install could not reach `registry.npmjs.org` and was stopped after hanging. A dry-run displayed an install plan but does not replace a clean install.
-- [ ] Run tests, lint, typecheck, and production build after restoring dependencies from a successful clean install. Attempts after the failed in-place install reported missing `vitest`, `eslint`, `tsc`, and `next` executables. Earlier Milestone 8 passes are historical and do not satisfy this final QA gate.
+- [x] On the currently available working dependency tree, `npm test` passed (23 tests), `npm run lint` passed, `npm run typecheck` passed, and `npm run build` passed with 90 generated pages, including the cheat-sheet index and five stage routes. These checks did not follow a successful clean install.
 - [ ] Run `npm audit` with registry access. Current attempt failed because DNS lookup for `registry.npmjs.org` returned `ENOTFOUND`; no advisory result is available. Do not apply broad upgrades without compatibility review.
 - [x] Source review: assessment scoring distinguishes 65 browser-checked points from 35 learner-reported self-assessment points; the UI states that commands are not executed or verified.
 - [x] Source review: workspace v1 migration preserves existing fields; malformed data is normalized/recovered; unknown future versions are preserved rather than overwritten; import is schema-validated; reset is explicit and local.
@@ -39,7 +39,7 @@
 - [ ] Complete a vulnerability audit and transitive dependency license report with registry access. Direct runtime dependencies declare MIT, Apache-2.0, or ISC in the lockfile; this is not a complete transitive license review.
 - [ ] Review the final public diff for private information and approve publication explicitly.
 
-## Final QA results — 2026-11-27
+## Final QA results — updated for V1 cheat sheets
 
 ### Linux regression suites
 
@@ -55,11 +55,15 @@ All suites below are **blocked**, not passed or failed, because Linux execution 
 
 ### Web and repository checks
 
-- [ ] `npm ci` — failed in place with Windows `EPERM` unlinking `lightningcss.win32-x64-msvc.node`; clean temporary install was blocked by registry DNS/network access.
-- [ ] `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` — attempted after the failed install; each could not start because its executable was missing from the partially cleaned `node_modules` tree. These are environment/setup failures, not code test failures.
+- [ ] `npm ci` — no successful clean install recorded. Earlier in-place attempts failed with Windows `EPERM` unlinking `lightningcss.win32-x64-msvc.node`; a clean temporary install was blocked by registry DNS/network access.
+- [x] `npm test` — 23 tests passed (3 test files), including cheat-sheet discovery, stage coverage, command references, required sections, and link checks.
+- [x] `npm run lint` — passed.
+- [x] `npm run typecheck` — passed.
+- [x] `npm run build` — passed; 90 pages generated, including `/cheatsheets` and five `/cheatsheets/<stage-id>` pages.
+- [ ] `python3 scripts/validate_content.py` — blocked because the Windows Python shim could not start. App catalog tests exercised the corresponding cheat-sheet discovery and guide-link validation, but do not replace this validator.
 - [ ] `npm audit` — blocked: registry request failed with `ENOTFOUND registry.npmjs.org`.
 - [x] `git diff --check` — passed after the final edits; Git reported only its normal LF-to-CRLF working-copy warnings.
-- [ ] Assessment browser E2E — blocked because the web dependencies could not be restored and no local app could be started; pre-existing saved attempts were left untouched.
+- [ ] Assessment browser E2E — remains outstanding; existing browser attempts were left untouched.
 
 The stage runner names reflect the existing repository scripts: Stage 04 text processing uses `test_stage05_examples.py`, and Stage 05 system information uses `test_stage06_examples.py`.
 
@@ -69,7 +73,6 @@ The stage runner names reflect the existing repository scripts: Stage 04 text pr
 - [ ] Confirm attribution wording for the source course without implying endorsement or reproducing proprietary material.
 - [ ] Replace the README's `<repository-url>` placeholder with the approved public repository URL.
 - [ ] Select a hosting platform and confirm its build/runtime configuration. The app uses the Next.js server runtime, not static export.
-- [ ] Either complete cheat sheets for V1 or explicitly revise the project scope before release.
 - [ ] Resolve or formally accept the source activity mapping limitation while preserving the documented unknowns.
 - [ ] Obtain explicit approval before publishing the repository or deploying the site.
 

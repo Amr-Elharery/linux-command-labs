@@ -2,6 +2,8 @@
 
 Use `which` for PATH lookup, `whereis` for standard binary/source/manual locations, and `find` to search an explicit directory tree. Each command has a Detailed and Revision guide.
 
+**Quick reference:** [File Search Cheat Sheet](../../cheatsheets/03-file-search.md).
+
 | Command | Detailed | Revision |
 |---|---|---|
 | `which` | [Read the tutorial](which.detailed.md) | [Quick review](which.revision.md) |

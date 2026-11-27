@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   contentRouteForLink,
   loadCatalog,
+  parseCheatSheetDocument,
   parseCommandDocument,
   validateCatalog,
 } from "@/lib/content";
@@ -45,11 +46,14 @@ afterEach(() => {
 });
 
 describe("repository content discovery", () => {
-  it("discovers all paired commands, stages, and challenge Markdown", () => {
+  it("discovers paired commands, challenges, and one complete cheat sheet per stage", () => {
     const catalog = loadCatalog(path.resolve(process.cwd(), "../.."));
     expect(catalog.commands).toHaveLength(31);
     expect(catalog.challenges).toHaveLength(9);
     expect(catalog.stages).toHaveLength(5);
+    expect(catalog.cheatsheets).toHaveLength(5);
+    expect(catalog.cheatsheets.map((sheet) => sheet.stage)).toEqual([1, 2, 3, 4, 5]);
+    expect(new Set(catalog.cheatsheets.flatMap((sheet) => sheet.commands)).size).toBe(31);
     for (const command of catalog.commands) {
       expect(command.guides.detailed.mode).toBe("detailed");
       expect(command.guides.revision.mode).toBe("revision");
@@ -57,6 +61,37 @@ describe("repository content discovery", () => {
     }
     expect(catalog.challenges.find((item) => item.id === "directory-organization")?.body)
       .toContain("<details>");
+  });
+
+  it("rejects cheat sheets without required metadata or sections", () => {
+    expect(() => parseCheatSheetDocument(
+      "---\nid: 01-file-system\ntype: cheatsheet\n---\n# Incomplete\n",
+      "content/cheatsheets/01-file-system.md",
+    )).toThrow("content/cheatsheets/01-file-system.md");
+    expect(() => parseCheatSheetDocument([
+      "---", "id: 01-file-system", 'title: "File System Operations Cheat Sheet"',
+      "type: cheatsheet", "stage: 1", 'summary: "Quick reference."',
+      "commands: [ls]", "---", "", "# Incomplete", "",
+    ].join("\n"), "content/cheatsheets/01-file-system.md")).toThrow(/missing required sections/);
+  });
+
+  it("rejects cheat sheet links outside content and unknown command references", () => {
+    const catalog = loadCatalog(path.resolve(process.cwd(), "../.."));
+    const first = catalog.cheatsheets[0];
+    expect(() => validateCatalog({
+      ...catalog,
+      cheatsheets: [{ ...first, body: first.body.replace("../stages/01-file-system/ls.detailed.md", "../../README.md") }],
+    }, path.resolve(process.cwd(), "../.."))).toThrow(/out-of-content local link/);
+    expect(() => validateCatalog({
+      ...catalog,
+      cheatsheets: [{ ...first, commands: ["unknown-command", ...first.commands.slice(1)] }],
+    }, path.resolve(process.cwd(), "../.."))).toThrow(/unknown command reference/);
+  });
+
+  it("requires complete cheat sheet stage coverage", () => {
+    const catalog = loadCatalog(path.resolve(process.cwd(), "../.."));
+    expect(() => validateCatalog({ ...catalog, cheatsheets: catalog.cheatsheets.slice(1) }, path.resolve(process.cwd(), "../..")))
+      .toThrow(/missing cheat sheet for stage 1/);
   });
 
   it("reports malformed frontmatter with its source path", () => {
@@ -96,5 +131,13 @@ describe("Markdown navigation mapping", () => {
     )).toBe("/paths/01-file-system");
     expect(contentRouteForLink("https://example.com/reference", "challenges/log-inspection.md"))
       .toBe("https://example.com/reference");
+    expect(contentRouteForLink(
+      "../stages/01-file-system/ls.detailed.md",
+      "content/cheatsheets/01-file-system.md",
+    )).toBe("/commands/ls/detailed");
+    expect(contentRouteForLink(
+      "../../cheatsheets/01-file-system.md",
+      "content/stages/02-file-content/README.md",
+    )).toBe("/cheatsheets/01-file-system");
   });
 });

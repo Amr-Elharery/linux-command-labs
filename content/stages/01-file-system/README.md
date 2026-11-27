@@ -2,6 +2,8 @@
 
 Learn to inspect and organize directories with `ls`, `pwd`, `cd`, `mkdir`, `cp`, `mv`, and `rm`. Each command has a Detailed guide and a concise Revision guide.
 
+**Quick reference:** [File System Operations Cheat Sheet](../../cheatsheets/01-file-system.md).
+
 | Command | Detailed | Revision |
 |---|---|---|
 | `ls` | [Read the tutorial](ls.detailed.md) | [Quick review](ls.revision.md) |

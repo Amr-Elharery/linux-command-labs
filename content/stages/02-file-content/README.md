@@ -2,6 +2,8 @@
 
 Learn to inspect synthetic text and log files with `cat`, `more`, `less`, `head`, `tail`, and `nl`. Every command has a Detailed guide and a concise Revision guide.
 
+**Quick reference:** [File Content Operations Cheat Sheet](../../cheatsheets/02-file-content.md).
+
 | Command | Detailed | Revision |
 |---|---|---|
 | `cat` | [Read the tutorial](cat.detailed.md) | [Quick review](cat.revision.md) |

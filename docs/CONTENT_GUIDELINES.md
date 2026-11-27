@@ -27,6 +27,10 @@ Required fields must be present and non-empty; `stage`, `mode`, `type`, and `dif
 
 Required fields: `id` (stable kebab-case identifier), `title`, `type: challenge`, `stage` (1–5), `difficulty`, `summary`, `objectives` (string list), `prerequisites` (command ID list), and `starting_files` (repository-relative paths under `playground/`). Challenge prose must include the challenge format in section 4 below. Hide the solution in `<details><summary>Show solution</summary>…</details>`.
 
+### Cheat sheet pages
+
+Create one concise Markdown file at `content/cheatsheets/<stage-slug>.md` for each stage. Required frontmatter fields are `id` (the stage slug, such as `01-file-system`), `title`, `type: cheatsheet`, `stage` (integer 1–5), `summary`, and `commands` (inline list of stable command IDs belonging to that stage). Include the sections `Commands covered`, `Purpose`, `Essential syntax`, `High-value options`, `Short examples`, `Useful combinations`, `Common mistakes and safety`, and `Learn more`. Link both Detailed and Revision files for each listed command with relative Markdown links. Sheets are references for existing commands and do not change the source-course activity count.
+
 ### Links and validation
 
 Use relative Markdown links for companion modes and related command pages. `python3 scripts/validate_content.py` checks frontmatter fields/types/enums, filename and mode agreement, command mode pairs, supplied command references, challenge paths, and local Markdown links. It uses only the Python standard library.

@@ -2,6 +2,8 @@
 
 Learn to inspect processes, memory, filesystem capacity, path usage, and command duration. Live values describe the current host and vary over time.
 
+**Quick reference:** [System Information Cheat Sheet](../../cheatsheets/05-system-information.md).
+
 ## Commands
 
 - [`top` Detailed](./top.detailed.md) · [Revision](./top.revision.md)

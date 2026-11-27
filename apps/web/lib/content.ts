@@ -28,6 +28,26 @@ const challengeFrontmatter = z.object({
   starting_files: z.array(z.string()),
 });
 
+const cheatSheetFrontmatter = z.object({
+  id: z.string().regex(/^\d{2}-[a-z0-9-]+$/),
+  title: z.string().min(1),
+  type: z.literal("cheatsheet"),
+  stage: z.number().int().min(1).max(5),
+  summary: z.string().min(1),
+  commands: z.array(z.string().min(1)).min(1),
+});
+
+const cheatSheetSections = [
+  "Commands covered",
+  "Purpose",
+  "Essential syntax",
+  "High-value options",
+  "Short examples",
+  "Useful combinations",
+  "Common mistakes and safety",
+  "Learn more",
+];
+
 export type LearningMode = "detailed" | "revision";
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 export type CommandPage = z.infer<typeof commandFrontmatter> & {
@@ -49,6 +69,10 @@ export type Challenge = z.infer<typeof challengeFrontmatter> & {
   body: string;
   sourcePath: string;
 };
+export type CheatSheet = z.infer<typeof cheatSheetFrontmatter> & {
+  body: string;
+  sourcePath: string;
+};
 export type LearningStage = {
   number: number;
   slug: string;
@@ -61,6 +85,7 @@ export type ContentCatalog = {
   stages: LearningStage[];
   commands: Command[];
   challenges: Challenge[];
+  cheatsheets: CheatSheet[];
 };
 
 export class ContentValidationError extends Error {
@@ -95,6 +120,20 @@ export function parseChallengeDocument(source: string, sourcePath: string): Chal
     throw new ContentValidationError([
       sourcePath + ": solution must use a collapsible Show solution details block",
     ]);
+  }
+  return { ...result.data, body: parsed.content.trim(), sourcePath };
+}
+
+export function parseCheatSheetDocument(source: string, sourcePath: string): CheatSheet {
+  const parsed = matter(source);
+  const result = cheatSheetFrontmatter.safeParse(parsed.data);
+  if (!result.success) {
+    throw new ContentValidationError([sourcePath + ": " + zodMessage(result.error)]);
+  }
+  const headings = new Set([...parsed.content.matchAll(/^##\s+(.+?)\s*$/gm)].map((match) => match[1]));
+  const missing = cheatSheetSections.filter((section) => !headings.has(section));
+  if (missing.length) {
+    throw new ContentValidationError([sourcePath + ": missing required sections: " + missing.join(", ")]);
   }
   return { ...result.data, body: parsed.content.trim(), sourcePath };
 }
@@ -169,6 +208,55 @@ function assertStartingFiles(challenge: Challenge, repoRoot: string): void {
   }
 }
 
+function validateCheatSheetLinks(
+  sheet: CheatSheet,
+  contentRoot: string,
+  repoRoot: string,
+  knownCommands: Set<string>,
+): string[] {
+  const problems: string[] = [];
+  const linkedGuides = new Set<string>();
+  const sourceDirectory = path.dirname(path.resolve(repoRoot, sheet.sourcePath));
+  for (const match of sheet.body.matchAll(/!?\[[^\]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)/g)) {
+    const raw = match[1].replace(/^<|>$/g, "");
+    if (/^(?:[a-z]+:|\/\/|#)/i.test(raw)) continue;
+    const relativeTarget = raw.split(/[?#]/, 1)[0];
+    let decodedTarget = relativeTarget;
+    try {
+      decodedTarget = decodeURIComponent(relativeTarget);
+    } catch {
+      problems.push(sheet.sourcePath + ": invalid URL encoding in local link " + raw);
+      continue;
+    }
+    const resolved = path.resolve(sourceDirectory, decodedTarget);
+    const relative = path.relative(contentRoot, resolved);
+    if (relative.startsWith("..") || path.isAbsolute(relative) || !existsSync(resolved) || !statSync(resolved).isFile()) {
+      problems.push(sheet.sourcePath + ": broken or out-of-content local link " + raw);
+      continue;
+    }
+    const routeTarget = path.posix.normalize(path.posix.join(path.posix.dirname(sheet.sourcePath), relativeTarget));
+    const guideMatch = /^(?:content\/)?stages\/(\d{2}-[a-z0-9-]+)\/([a-z0-9-]+)\.(detailed|revision)\.md$/.exec(routeTarget);
+    if (guideMatch) {
+      const [, stageSlug, commandId, mode] = guideMatch;
+      if (!knownCommands.has(commandId)) {
+        problems.push(sheet.sourcePath + ": guide link names unknown command " + commandId);
+      } else if (stageSlug !== sheet.id) {
+        problems.push(sheet.sourcePath + ": guide link for " + commandId + " points to a different stage");
+      } else {
+        linkedGuides.add(commandId + ":" + mode);
+      }
+    }
+  }
+  for (const commandId of sheet.commands) {
+    for (const mode of ["detailed", "revision"]) {
+      if (!linkedGuides.has(commandId + ":" + mode)) {
+        problems.push(sheet.sourcePath + ": missing " + mode + " guide link for " + commandId);
+      }
+    }
+  }
+  return problems;
+}
+
 export function validateCatalog(
   catalog: ContentCatalog,
   repoRoot = path.resolve(process.cwd(), "../.."),
@@ -176,6 +264,10 @@ export function validateCatalog(
   const problems: string[] = [];
   const ids = new Set(catalog.commands.map((command) => command.id));
   const stageByNumber = new Map(catalog.stages.map((stage) => [stage.number, stage]));
+  const cheatsheetIds = new Set<string>();
+  const cheatsheetsByStage = new Map<number, CheatSheet>();
+  const cheatSheetCommandCounts = new Map<string, number>();
+  const contentRoot = path.join(repoRoot, "content");
 
   for (const command of catalog.commands) {
     const stage = stageByNumber.get(command.stage);
@@ -225,6 +317,43 @@ export function validateCatalog(
     } catch (error) {
       if (error instanceof ContentValidationError) problems.push(...error.problems);
       else throw error;
+    }
+  }
+
+  for (const sheet of catalog.cheatsheets) {
+    const stage = stageByNumber.get(sheet.stage);
+    if (cheatsheetIds.has(sheet.id)) problems.push("duplicate cheat sheet id: " + sheet.id);
+    cheatsheetIds.add(sheet.id);
+    if (!stage) {
+      problems.push("cheat sheet " + sheet.id + ": stage " + sheet.stage + " has no stage README");
+      continue;
+    }
+    if (sheet.id !== stage.slug || !sheet.sourcePath.endsWith("/" + stage.slug + ".md")) {
+      problems.push("cheat sheet " + sheet.id + ": id and filename must match stage " + stage.slug);
+    }
+    if (cheatsheetsByStage.has(sheet.stage)) problems.push("duplicate cheat sheet for stage " + sheet.stage);
+    cheatsheetsByStage.set(sheet.stage, sheet);
+    if (new Set(sheet.commands).size !== sheet.commands.length) {
+      problems.push(sheet.sourcePath + ": command references must be unique");
+    }
+    for (const commandId of sheet.commands) {
+      const command = catalog.commands.find((candidate) => candidate.id === commandId);
+      if (!command) {
+        problems.push(sheet.sourcePath + ": unknown command reference " + commandId);
+        continue;
+      }
+      if (command.stage !== sheet.stage) {
+        problems.push(sheet.sourcePath + ": command " + commandId + " belongs to stage " + command.stage);
+      }
+      cheatSheetCommandCounts.set(commandId, (cheatSheetCommandCounts.get(commandId) ?? 0) + 1);
+    }
+    problems.push(...validateCheatSheetLinks(sheet, contentRoot, repoRoot, ids));
+  }
+  for (const stage of catalog.stages) {
+    if (!cheatsheetsByStage.has(stage.number)) problems.push("missing cheat sheet for stage " + stage.number);
+    for (const command of catalog.commands.filter((candidate) => candidate.stage === stage.number)) {
+      const count = cheatSheetCommandCounts.get(command.id) ?? 0;
+      if (count !== 1) problems.push("command " + command.id + ": expected one cheat sheet reference, found " + count);
     }
   }
   if (problems.length) throw new ContentValidationError(problems);
@@ -308,7 +437,19 @@ export function loadCatalog(repoRoot = path.resolve(process.cwd(), "../..")): Co
         "content/" + relativePath,
       );
     });
-  return validateCatalog({ stages, commands, challenges }, repoRoot);
+  const cheatsheetsDirectory = path.join(contentRoot, "cheatsheets");
+  const cheatsheets = readdirSync(cheatsheetsDirectory)
+    .filter((filename) => filename.endsWith(".md"))
+    .sort()
+    .map((filename) => {
+      const relativePath = path.relative(contentRoot, path.join(cheatsheetsDirectory, filename))
+        .split(path.sep).join("/");
+      return parseCheatSheetDocument(
+        readFileSync(path.join(cheatsheetsDirectory, filename), "utf8"),
+        "content/" + relativePath,
+      );
+    });
+  return validateCatalog({ stages, commands, challenges, cheatsheets }, repoRoot);
 }
 
 export function contentRouteForLink(href: string, sourcePath: string): string {
@@ -316,11 +457,14 @@ export function contentRouteForLink(href: string, sourcePath: string): string {
   const cleanHref = href.split("#", 1)[0].split("?", 1)[0];
   if (!cleanHref.endsWith(".md")) return href;
   const target = path.posix.normalize(path.posix.join(path.posix.dirname(sourcePath), cleanHref));
-  const commandMatch = /^stages\/(\d{2}-[a-z0-9-]+)\/([a-z0-9-]+)\.(detailed|revision)\.md$/.exec(target);
+  const routeTarget = target.replace(/^content\//, "");
+  const commandMatch = /^stages\/(\d{2}-[a-z0-9-]+)\/([a-z0-9-]+)\.(detailed|revision)\.md$/.exec(routeTarget);
   if (commandMatch) return "/commands/" + commandMatch[2] + "/" + commandMatch[3];
-  const challengeMatch = /^challenges\/([a-z0-9-]+)\.md$/.exec(target);
+  const challengeMatch = /^challenges\/([a-z0-9-]+)\.md$/.exec(routeTarget);
   if (challengeMatch) return "/challenges/" + challengeMatch[1];
-  const stageMatch = /^stages\/(\d{2}-[a-z0-9-]+)\/README\.md$/.exec(target);
+  const cheatSheetMatch = /^cheatsheets\/(\d{2}-[a-z0-9-]+)\.md$/.exec(routeTarget);
+  if (cheatSheetMatch) return "/cheatsheets/" + cheatSheetMatch[1];
+  const stageMatch = /^stages\/(\d{2}-[a-z0-9-]+)\/README\.md$/.exec(routeTarget);
   if (stageMatch) return "/paths/" + stageMatch[1];
   return href;
 }

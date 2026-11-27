@@ -2,6 +2,8 @@
 
 The source course description reports **31 guided labs and 10 challenges (41 activities)**. The supplied project brief provides the command lists below and a set of 9 named combined scenario headlines, but it does not supply a numbered activity list or classify each headline as a guided lab or challenge. The mapping therefore preserves the given titles and marks uncertain assignments rather than manufacturing a 41-row syllabus.
 
+The five stage cheat sheets are quick-reference views of the 31 already mapped commands. They do not add or claim to represent source-course activities.
+
 ## Stage and command coverage
 
 | Stage | Supplied commands/topics | Named supplied activity headline(s) |

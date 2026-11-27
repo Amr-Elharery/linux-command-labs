@@ -10,6 +10,7 @@ A practical, GitHub-first learning resource for Linux command-line skills, desig
 - **Safe practice:** exercises operate on synthetic data inside the repository's playground.
 - **Hybrid experience:** public learning content; personal progress stays in the user's browser by default.
 - **No unnecessary backend:** V1 requires no account system, database, or remote command execution.
+- **Stage cheat sheets:** one concise quick reference for each of the five command stages.
 
 ## Learning path
 
@@ -64,11 +65,13 @@ npm run dev
 
 Open the local URL printed by Next.js (normally `http://localhost:3000`). The site includes the six-section Final Assessment at `/assessment`. Knowledge answers are checked in the browser; practical tasks are explicitly self-assessed. The site does not run commands. Attempts resume and remain in browser localStorage. Use `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build` to validate changes. Personal progress, bookmarks, notes, challenge scores, assessment attempts, and theme preference stay in browser localStorage; they are specific to that browser/device and may be lost if site data is cleared, so use My workspace to export a JSON backup. No account or server-side personal profile is used.
 
+Browse concise stage references at `/cheatsheets`; each stage sheet links to the corresponding Detailed and Revision guides.
+
 Personal progress must not be uploaded or committed by default.
 
 ## Development status
 
-Milestones 0–6 establish the content schema, safe playground, and all five command stages. Milestone 7 delivers the web portal and browser-local personal workspace. Milestone 8 adds the final assessment and a release checklist; Linux QA, cheat-sheet scope, licensing, repository URL, accessibility review, and publish/deploy decisions remain open.
+Milestones 0–6 establish the content schema, safe playground, and all five command stages. Milestone 7 delivers the web portal and browser-local personal workspace. Milestone 8 adds the final assessment and release checklist. The V1 cheat sheets are implemented; Linux QA, clean-install/dependency audit, assessment end-to-end and accessibility review, licensing, repository URL, hosting, and publish/deploy decisions remain open.
 
 See:
 - [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md)
