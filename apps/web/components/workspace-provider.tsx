@@ -57,10 +57,14 @@ export function WorkspaceProvider({
   children,
   commandIds,
   challengeIds,
+  assessmentTaskIds,
+  assessmentSectionIds,
 }: {
   children: ReactNode;
   commandIds: string[];
   challengeIds: string[];
+  assessmentTaskIds: string[];
+  assessmentSectionIds: string[];
 }) {
   const [state, setState] = useState<WorkspaceState>(createEmptyWorkspace);
   const [hydrated, setHydrated] = useState(false);
@@ -77,13 +81,13 @@ export function WorkspaceProvider({
       setHydrated(true);
       return;
     }
-    const saved = readWorkspace(storage, commandIds, challengeIds);
+    const saved = readWorkspace(storage, commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
     setState(saved.state);
     setStatus(saved.status);
     setNotice(statusMessage(saved.status));
     shouldPersist.current = saved.status === "empty" || saved.status === "loaded" || saved.status === "migrated";
     setHydrated(true);
-  }, [commandIds, challengeIds]);
+  }, [commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds]);
 
   useEffect(() => {
     if (!hydrated || !shouldPersist.current) return;
@@ -109,7 +113,7 @@ export function WorkspaceProvider({
         setNotice(null);
         return;
       }
-      const saved = decodeWorkspace(event.newValue, commandIds, challengeIds);
+      const saved = decodeWorkspace(event.newValue, commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
       shouldPersist.current = saved.status === "loaded" || saved.status === "migrated";
       setState(saved.state);
       setStatus(saved.status);
@@ -117,7 +121,7 @@ export function WorkspaceProvider({
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, [commandIds, challengeIds]);
+  }, [commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds]);
 
   const dispatch = useCallback((action: WorkspaceAction) => {
     if (!hydrated) return;
@@ -126,7 +130,7 @@ export function WorkspaceProvider({
   }, [hydrated]);
 
   const importJson = useCallback((json: string) => {
-    const imported = decodeWorkspace(json, commandIds, challengeIds);
+    const imported = decodeWorkspace(json, commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
     if (imported.status === "recovered" || imported.status === "unsupported") {
       throw new Error("That file is not a supported Linux Labs progress export.");
     }
@@ -134,7 +138,7 @@ export function WorkspaceProvider({
     setState(imported.state);
     setStatus(imported.status);
     setNotice(imported.status === "migrated" ? statusMessage("migrated") : "Progress imported into this browser.");
-  }, [commandIds, challengeIds]);
+  }, [commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds]);
 
   const exportJson = useCallback(() => {
     const blob = new Blob([serializeWorkspace(state)], { type: "application/json" });

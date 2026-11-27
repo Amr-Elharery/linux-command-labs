@@ -21,7 +21,7 @@ A practical, GitHub-first learning resource for Linux command-line skills, desig
 | 04 | [Text Processing](content/stages/04-text-processing/README.md) | `grep`, `wc`, `cut`, `sort`, `uniq`, `tr`, `diff`, `join`, `xargs`, `awk` |
 | 05 | [System Information](content/stages/05-system-information/README.md) | `top`, `free`, `df`, `du`, `time` |
 
-The supplied course describes 31 guided labs and 10 challenges (41 activities). Preserve this coverage when mapping source topics, and record any ambiguity in `docs/COURSE_MAPPING.md`.
+The source course describes 31 guided labs and 10 challenges (41 activities), but the provided material does not enumerate or classify every activity. The discrepancy is documented in `docs/COURSE_MAPPING.md`; the authored final assessment does not claim to fill it.
 
 ## Repository layout
 
@@ -62,17 +62,18 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Next.js (normally `http://localhost:3000`). Use `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build` to validate changes. Personal progress, bookmarks, notes, challenge scores, and theme preference stay in browser localStorage; use My workspace to export or import a JSON backup. No account or server-side personal profile is used.
+Open the local URL printed by Next.js (normally `http://localhost:3000`). The site includes the six-section Final Assessment at `/assessment`. Knowledge answers are checked in the browser; practical tasks are explicitly self-assessed. The site does not run commands. Attempts resume and remain in browser localStorage. Use `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build` to validate changes. Personal progress, bookmarks, notes, challenge scores, assessment attempts, and theme preference stay in browser localStorage; they are specific to that browser/device and may be lost if site data is cleared, so use My workspace to export a JSON backup. No account or server-side personal profile is used.
 
 Personal progress must not be uploaded or committed by default.
 
 ## Development status
 
-Milestones 0–6 establish the content schema, safe playground, and all five command stages. Milestone 7 delivers the web portal and browser-local personal workspace. The integrated final assessment and release preparation remain Milestone 8.
+Milestones 0–6 establish the content schema, safe playground, and all five command stages. Milestone 7 delivers the web portal and browser-local personal workspace. Milestone 8 adds the final assessment and a release checklist; Linux QA, cheat-sheet scope, licensing, repository URL, accessibility review, and publish/deploy decisions remain open.
 
 See:
 - [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md)
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - [`docs/CONTENT_GUIDELINES.md`](docs/CONTENT_GUIDELINES.md)
 - [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md)
+- [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md)
 - [`CODEX_INSTRUCTIONS.md`](CODEX_INSTRUCTIONS.md)

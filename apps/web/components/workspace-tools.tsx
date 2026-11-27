@@ -69,7 +69,7 @@ export function WorkspaceTools() {
             <DialogHeader>
               <DialogTitle>Reset this browser’s Linux Labs progress?</DialogTitle>
               <DialogDescription>
-                This clears completed commands and challenges, bookmarks, notes, recent activity, challenge results, and the selected theme from this browser. It does not change repository files.
+                This clears completed commands and challenges, bookmarks, notes, recent activity, challenge results, assessment attempts, and the selected theme from this browser. It does not change repository files.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -87,7 +87,7 @@ export function WorkspaceTools() {
       <p className="flex items-center gap-2 text-xs text-muted-foreground">
         <ShieldCheck className="size-4 text-primary" aria-hidden="true" />
         No account, backend, or cloud synchronization is used.
-        <span className="sr-only">{state.schemaVersion === 1 ? "Workspace schema version 1." : ""}</span>
+        <span className="sr-only">{state.schemaVersion === 2 ? "Workspace schema version 2." : ""}</span>
       </p>
     </section>
   );

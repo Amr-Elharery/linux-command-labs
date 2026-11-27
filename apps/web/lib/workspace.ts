@@ -3,15 +3,34 @@ export const WORKSPACE_KEY = "linux-labs.workspace.v1";
 export type Theme = "light" | "dark";
 export type RecentCommand = { commandId: string; viewedAt: number };
 export type ChallengeResult = { score: number | null; completedAt: string };
+export type AssessmentResponse = {
+  answer: string;
+  submitted: boolean;
+  correct: boolean | null;
+  checkedCriteria: string[];
+  completedAt: string | null;
+};
+export type AssessmentAttempt = {
+  id: string;
+  status: "in_progress" | "completed";
+  startedAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+  responses: Record<string, AssessmentResponse>;
+  score: number | null;
+  passed: boolean | null;
+  sectionScores: Record<string, number>;
+};
 
 export type WorkspaceState = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   completedCommands: string[];
   completedChallenges: string[];
   bookmarks: string[];
   notes: Record<string, string>;
   recentlyViewed: RecentCommand[];
   challengeResults: Record<string, ChallengeResult>;
+  assessmentAttempts: AssessmentAttempt[];
   theme: Theme;
 };
 
@@ -27,17 +46,19 @@ export type WorkspaceAction =
   | { type: "visit-command"; id: string; viewedAt?: number }
   | { type: "set-theme"; theme: Theme }
   | { type: "set-challenge-result"; id: string; result: ChallengeResult }
+  | { type: "save-assessment-attempt"; attempt: AssessmentAttempt }
   | { type: "reset" };
 
 export function createEmptyWorkspace(): WorkspaceState {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     completedCommands: [],
     completedChallenges: [],
     bookmarks: [],
     notes: {},
     recentlyViewed: [],
     challengeResults: {},
+    assessmentAttempts: [],
     theme: "light",
   };
 }
@@ -92,23 +113,90 @@ function resultRecord(value: unknown, knownChallenges: Set<string>): Record<stri
   return Object.fromEntries(entries);
 }
 
+function validDate(value: unknown): value is string {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value));
+}
+
+function assessmentAttempts(
+  value: unknown,
+  knownTasks: Set<string>,
+  knownSections: Set<string>,
+): AssessmentAttempt[] {
+  if (!Array.isArray(value)) return [];
+  const attempts = value.flatMap((item): AssessmentAttempt[] => {
+    if (!isRecord(item) || typeof item.id !== "string" || !/^[a-zA-Z0-9-]{1,100}$/.test(item.id)) return [];
+    if (item.status !== "in_progress" && item.status !== "completed") return [];
+    if (!validDate(item.startedAt) || !validDate(item.updatedAt) || !isRecord(item.responses)) return [];
+    const completed = item.status === "completed";
+    if (completed ? !validDate(item.completedAt) : item.completedAt !== null) return [];
+    if (completed
+      ? typeof item.score !== "number" || !Number.isInteger(item.score) || item.score < 0 || item.score > 100 || typeof item.passed !== "boolean"
+      : item.score !== null || item.passed !== null) return [];
+
+    const responses: Record<string, AssessmentResponse> = {};
+    for (const [taskId, response] of Object.entries(item.responses)) {
+      if (!knownTasks.has(taskId) || !isRecord(response)) continue;
+      if (typeof response.answer !== "string" || response.answer.length > 4_000 || typeof response.submitted !== "boolean") continue;
+      if (response.correct !== null && typeof response.correct !== "boolean") continue;
+      if (!Array.isArray(response.checkedCriteria) || response.checkedCriteria.some((criterion) => typeof criterion !== "string")) continue;
+      if (response.completedAt !== null && !validDate(response.completedAt)) continue;
+      responses[taskId] = {
+        answer: response.answer,
+        submitted: response.submitted,
+        correct: response.correct,
+        checkedCriteria: [...new Set((response.checkedCriteria as string[]).filter((criterion) => criterion.length <= 500))],
+        completedAt: response.completedAt as string | null,
+      };
+    }
+
+    if (!isRecord(item.sectionScores)) return [];
+    const sectionScores: Record<string, number> = {};
+    for (const [sectionId, score] of Object.entries(item.sectionScores)) {
+      if (knownSections.has(sectionId) && typeof score === "number" && Number.isInteger(score) && score >= 0 && score <= 100) {
+        sectionScores[sectionId] = score;
+      }
+    }
+    return [{
+      id: item.id,
+      status: item.status,
+      startedAt: item.startedAt,
+      updatedAt: item.updatedAt,
+      completedAt: item.completedAt as string | null,
+      responses,
+      score: item.score as number | null,
+      passed: item.passed as boolean | null,
+      sectionScores,
+    }];
+  });
+  const unique = [...new Map(attempts.map((attempt) => [attempt.id, attempt])).values()];
+  const newest = unique.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+  const latestInProgress = newest.find((attempt) => attempt.status === "in_progress");
+  const retained = latestInProgress
+    ? [latestInProgress, ...newest.filter((attempt) => attempt.status === "completed")].slice(0, 10)
+    : newest.slice(0, 10);
+  return retained.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+}
+
 function normalizeWorkspace(
   input: Record<string, unknown>,
   commandIds: Set<string>,
   challengeIds: Set<string>,
+  assessmentTaskIds: Set<string>,
+  assessmentSectionIds: Set<string>,
 ): WorkspaceState {
   const completedCommands = uniqueKnownIds(input.completedCommands, commandIds);
   const completedChallenges = uniqueKnownIds(input.completedChallenges, challengeIds);
   const bookmarks = uniqueKnownIds(input.bookmarks, new Set([...commandIds, ...challengeIds]));
   const theme = input.theme === "dark" ? "dark" : "light";
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     completedCommands,
     completedChallenges,
     bookmarks,
     notes: stringRecord(input.notes),
     recentlyViewed: recentEntries(input.recentlyViewed, commandIds),
     challengeResults: resultRecord(input.challengeResults, challengeIds),
+    assessmentAttempts: assessmentAttempts(input.assessmentAttempts, assessmentTaskIds, assessmentSectionIds),
     theme,
   };
 }
@@ -117,6 +205,8 @@ function migrateLegacyWorkspace(
   input: Record<string, unknown>,
   commandIds: Set<string>,
   challengeIds: Set<string>,
+  assessmentTaskIds: Set<string>,
+  assessmentSectionIds: Set<string>,
 ): WorkspaceState {
   const combined = Array.isArray(input.completedItems) ? input.completedItems : [];
   const completedCommands = combined.filter(
@@ -126,9 +216,11 @@ function migrateLegacyWorkspace(
     (id): id is string => typeof id === "string" && challengeIds.has(id),
   );
   return normalizeWorkspace(
-    { ...input, completedCommands, completedChallenges },
+    { ...input, completedCommands, completedChallenges, assessmentAttempts: [] },
     commandIds,
     challengeIds,
+    assessmentTaskIds,
+    assessmentSectionIds,
   );
 }
 
@@ -136,9 +228,13 @@ export function decodeWorkspace(
   json: string,
   commandIds: Iterable<string>,
   challengeIds: Iterable<string>,
+  assessmentTaskIds: Iterable<string> = [],
+  assessmentSectionIds: Iterable<string> = [],
 ): WorkspaceRead {
   const commands = new Set(commandIds);
   const challenges = new Set(challengeIds);
+  const tasks = new Set(assessmentTaskIds);
+  const sections = new Set(assessmentSectionIds);
   let value: unknown;
   try {
     value = JSON.parse(json);
@@ -148,12 +244,17 @@ export function decodeWorkspace(
   if (!isRecord(value)) return { state: createEmptyWorkspace(), status: "recovered" };
 
   const version = typeof value.schemaVersion === "number" ? value.schemaVersion : 0;
-  if (version > 1) return { state: createEmptyWorkspace(), status: "unsupported" };
-  if (version < 1) {
-    return { state: migrateLegacyWorkspace(value, commands, challenges), status: "migrated" };
+  if (version > 2) return { state: createEmptyWorkspace(), status: "unsupported" };
+  if (version < 2) {
+    const migrated = version === 1
+      ? normalizeWorkspace(value, commands, challenges, tasks, sections)
+      : migrateLegacyWorkspace(value, commands, challenges, tasks, sections);
+    return { state: migrated, status: "migrated" };
   }
 
-  const state = normalizeWorkspace(value, commands, challenges);
+  const state = normalizeWorkspace(value, commands, challenges, tasks, sections);
+  const attemptsAreValid = Array.isArray(value.assessmentAttempts)
+    && state.assessmentAttempts.length === value.assessmentAttempts.length;
   const shapeIsValid =
     Array.isArray(value.completedCommands) &&
     Array.isArray(value.completedChallenges) &&
@@ -161,6 +262,7 @@ export function decodeWorkspace(
     isRecord(value.notes) &&
     Array.isArray(value.recentlyViewed) &&
     isRecord(value.challengeResults) &&
+    attemptsAreValid &&
     (value.theme === "light" || value.theme === "dark");
   return { state, status: shapeIsValid ? "loaded" : "recovered" };
 }
@@ -169,6 +271,8 @@ export function readWorkspace(
   storage: StoragePort,
   commandIds: Iterable<string>,
   challengeIds: Iterable<string>,
+  assessmentTaskIds: Iterable<string> = [],
+  assessmentSectionIds: Iterable<string> = [],
 ): WorkspaceRead {
   let stored: string | null;
   try {
@@ -178,7 +282,7 @@ export function readWorkspace(
   }
   return stored === null
     ? { state: createEmptyWorkspace(), status: "empty" }
-    : decodeWorkspace(stored, commandIds, challengeIds);
+    : decodeWorkspace(stored, commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
 }
 
 export function writeWorkspace(storage: StoragePort, state: WorkspaceState): boolean {
@@ -231,6 +335,12 @@ export function reduceWorkspace(state: WorkspaceState, action: WorkspaceAction):
         ...state,
         challengeResults: { ...state.challengeResults, [action.id]: action.result },
       };
+    case "save-assessment-attempt": {
+      const attempts = [action.attempt, ...state.assessmentAttempts.filter((attempt) => attempt.id !== action.attempt.id)]
+        .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+        .slice(0, 10);
+      return { ...state, assessmentAttempts: attempts };
+    }
     case "reset":
       return createEmptyWorkspace();
   }

@@ -1,0 +1,67 @@
+{
+  "id": "linux-labs-final-assessment",
+  "title": "Linux Labs Final Assessment",
+  "version": 1,
+  "passingScore": 75,
+  "minimumSectionPercent": 50,
+  "instructions": "Complete each task in order or skip between sections. Sixty-five points come from typed answers checked against this browser's answer key; this does not execute or prove a Linux command. Thirty-five points are learner-reported practical checks: run those commands yourself in the repository playground, then confirm the rubric items you verified. The assessment never runs shell commands and does not touch host files.",
+  "prerequisites": ["Complete or review the five learning stages", "Initialize the synthetic playground with setup/setup.sh", "Use a Linux terminal for practical tasks; the browser cannot verify command execution"],
+  "sections": [
+    {
+      "id": "fundamentals",
+      "title": "A. Command fundamentals and syntax",
+      "description": "Choose commands and paths precisely, and recognize a safer interactive option.",
+      "tasks": [
+        { "id": "a-which", "type": "knowledge", "points": 5, "prompt": "Which command searches the directories in PATH to locate an executable?", "acceptedAnswers": ["which"], "hint": "The command name is also one of the Stage 03 lessons.", "feedback": "Use which to report the executable selected from PATH. whereis searches a wider set of related locations.", "solution": "which grep" },
+        { "id": "a-relative-path", "type": "knowledge", "points": 5, "prompt": "From the repository root, enter the relative path to the synthetic employee dataset.", "acceptedAnswers": ["playground/data/employees.csv", "./playground/data/employees.csv"], "hint": "Start with the playground directory.", "feedback": "The dataset is under playground/data/ and is safe synthetic data.", "solution": "playground/data/employees.csv" },
+        { "id": "a-rm-prompt", "type": "knowledge", "points": 5, "prompt": "Which rm option asks before removing each file? Enter the short option.", "acceptedAnswers": ["-i"], "hint": "It stands for interactive.", "feedback": "rm -i prompts for confirmation. Always inspect and tightly scope deletion targets; never practice against system paths.", "solution": "rm -i playground/projects/organization-lab/inbox/example.tmp" }
+      ]
+    },
+    {
+      "id": "filesystem",
+      "title": "B. File system operations",
+      "description": "Practice creating, copying, moving, checking, and safely cleaning files in the marked disposable organization workspace.",
+      "tasks": [
+        { "id": "b-organize", "type": "self_assessed", "points": 5, "prompt": "Inside playground/projects/organization-lab only, create assessment/ready, copy inbox/launch-checklist.txt into it as review-checklist.txt, and verify the source and copy are present.", "hint": "Use mkdir -p, cp, pwd, and ls. Quote any path that contains spaces.", "feedback": "This is self-assessed: the app records your checklist, not command execution.", "solution": "mkdir -p playground/projects/organization-lab/assessment/ready\ncp playground/projects/organization-lab/inbox/launch-checklist.txt playground/projects/organization-lab/assessment/ready/review-checklist.txt\nls -l playground/projects/organization-lab/inbox playground/projects/organization-lab/assessment/ready", "rubric": ["I confirmed the working tree is playground/projects/organization-lab.", "The copied file exists and the original remains in inbox."] },
+        { "id": "b-safe-cleanup", "type": "self_assessed", "points": 5, "prompt": "Create one temporary note under the marked organization-lab directory, inspect the exact target, and remove only that file with an interactive confirmation. Verify the workspace remains intact.", "hint": "Use a fully quoted, explicit path and ls before rm -i. Do not use rm -r or a wildcard.", "feedback": "This is self-assessed: the app does not inspect your filesystem. The reset script can restore the marked starter workspace.", "solution": "target='playground/projects/organization-lab/assessment/temp note.txt'\nprintf 'temporary\n' > \"$target\"\nls -l -- \"$target\"\nrm -i -- \"$target\"\nbash setup/reset-lab.sh --yes\nbash setup/setup.sh", "rubric": ["I inspected the single exact file before deletion and used rm -i without recursion or a wildcard.", "I verified the workspace and used the documented playground reset workflow afterward."] }
+      ]
+    },
+    {
+      "id": "inspection-search",
+      "title": "C. File content inspection and search",
+      "description": "Select appropriate readers, investigate the synthetic authentication log, and locate a configuration-like fixture.",
+      "tasks": [
+        { "id": "c-large-log", "type": "knowledge", "points": 5, "prompt": "Which command is the best interactive pager for navigating a large log without printing the whole file?", "acceptedAnswers": ["less"], "hint": "It lets you search and move both forward and backward.", "feedback": "less is a pager designed for navigating large files. cat writes the whole file to standard output.", "solution": "less playground/logs/app.log" },
+        { "id": "c-auth-count", "type": "knowledge", "points": 5, "prompt": "The synthetic auth.log has two lines containing the exact phrase Failed password. What does grep -c 'Failed password' playground/logs/auth.log return? Enter the number.", "acceptedAnswers": ["2"], "hint": "Count matching lines, not words or unique IP addresses.", "feedback": "There are two failed-password events in the synthetic fixture.", "solution": "grep -c 'Failed password' playground/logs/auth.log" },
+        { "id": "c-find-config", "type": "self_assessed", "points": 5, "prompt": "Use find to locate regular files named *.conf under playground/projects. Confirm the result stays inside the repository playground.", "hint": "Combine a bounded starting directory with -type f and -name.", "feedback": "This is self-assessed: the browser checks your confirmation only.", "solution": "find playground/projects -type f -name '*.conf'", "rubric": ["I used playground/projects as the search root and selected regular files with -type f.", "The result was playground/projects/atlas/config/app.conf and I did not search or modify system paths."] }
+      ]
+    },
+    {
+      "id": "text-processing",
+      "title": "D. Text processing and pipelines",
+      "description": "Combine commands and reason about deterministic synthetic CSV and log results.",
+      "tasks": [
+        { "id": "d-transaction-total", "type": "knowledge", "points": 10, "prompt": "Using the transactions CSV, awk -F, 'NR > 1 && $6 == \"complete\" { total += $5 } END { printf \"%.2f\\n\", total }' returns what total amount for complete transactions? Enter the number only.", "acceptedAnswers": ["54.75"], "hint": "Sum the amount column only where the status column is complete; skip the header.", "feedback": "The complete rows have amounts 12.75, 5.00, and 37.00, totaling 54.75.", "solution": "awk -F, 'NR > 1 && $6 == \"complete\" { total += $5 } END { printf \"%.2f\\n\", total }' playground/data/transactions.csv" },
+        { "id": "d-active-employees", "type": "knowledge", "points": 10, "prompt": "How many active employees are in employees.csv, excluding the header?", "acceptedAnswers": ["4"], "hint": "There are five data rows; one is inactive.", "feedback": "Four of the five synthetic employee rows have status active.", "solution": "awk -F, 'NR > 1 && $5 == \"active\" { count++ } END { print count+0 }' playground/data/employees.csv" },
+        { "id": "d-sort-uniq", "type": "knowledge", "points": 10, "prompt": "Complete the pipeline: cut -d, -f3 playground/data/employees.csv | ____ | uniq -c. What command must sort the values so all duplicate departments are adjacent?", "acceptedAnswers": ["sort"], "hint": "uniq compares adjacent lines; the input begins in original CSV order.", "feedback": "Sort the extracted fields before uniq so duplicates are adjacent and can be counted globally.", "solution": "tail -n +2 playground/data/employees.csv | cut -d, -f3 | sort | uniq -c" }
+      ]
+    },
+    {
+      "id": "system-information",
+      "title": "E. System information and resource investigation",
+      "description": "Choose the right tool and interpret what it measures without relying on fixed live machine values.",
+      "tasks": [
+        { "id": "e-memory", "type": "knowledge", "points": 5, "prompt": "Which command and option display memory values in human-readable units? Enter both, for example: free -h", "acceptedAnswers": ["free -h"], "hint": "The command begins with free.", "feedback": "free -h reports host memory in readable units. Its values vary while the system runs.", "solution": "free -h" },
+        { "id": "e-directory-usage", "type": "knowledge", "points": 5, "prompt": "Which command estimates the space used by a directory tree: df or du?", "acceptedAnswers": ["du"], "hint": "Its name refers to disk usage for files/directories.", "feedback": "du estimates file and directory usage. df reports capacity and usage for mounted filesystems.", "solution": "du -sh playground/data" }
+      ]
+    },
+    {
+      "id": "integrated-scenario",
+      "title": "F. Integrated practical scenario",
+      "description": "Triage synthetic service and authentication records, summarize business data, and inspect resource usage with safe, composed commands.",
+      "tasks": [
+        { "id": "f-integrated-triage", "type": "self_assessed", "points": 20, "prompt": "Complete the integrated investigation from the repository root. Work only with the synthetic playground. Find the application error count, summarize failed-auth source IPs, calculate complete transaction value, locate the app.conf fixture, compare filesystem capacity with playground directory size, inspect a live process snapshot, and time one read-only command. Write down the commands and short findings in your notes.", "hint": "Use grep and wc for counts; grep, awk, sort, and uniq for IP summaries; awk for the CSV total; find for app.conf; df and du answer different questions. top metrics and time measurements vary, so explain what they mean rather than recording fixed values.", "feedback": "This scenario is self-assessed. The app records your rubric completion and does not inspect files, execute commands, or assert live system values.", "solution": "grep -i -c 'ERROR' playground/logs/app.log\ngrep 'Failed password' playground/logs/auth.log | awk '{print $11}' | sort | uniq -c\nawk -F, 'NR > 1 && $6 == \"complete\" { total += $5 } END { printf \"%.2f\\n\", total }' playground/data/transactions.csv\nfind playground/projects -type f -name '*.conf'\ndf -hT .\ndu -sh playground\ntop -b -n 1 | head -n 10\ntime grep -i -c 'ERROR' playground/logs/app.log", "rubric": ["The application log error count is 1, and I used a bounded read-only search.", "The auth summary has two failed events, one each from 192.0.2.10 and 198.51.100.23.", "The complete transaction total is 54.75 and app.conf was found under playground/projects/atlas/config/.", "I used df for filesystem capacity and du for playground directory usage, and kept all operations read-only and within the playground.", "I inspected top output as live host data and interpreted time's real elapsed, user CPU, and system CPU values without expecting fixed measurements."] }
+      ]
+    }
+  ]
+}

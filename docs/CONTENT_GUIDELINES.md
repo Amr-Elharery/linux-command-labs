@@ -112,3 +112,7 @@ Build cumulative scenarios, such as:
 ## 8. Source and originality
 
 The supplied LabEx syllabus is a scope reference. Write original explanations, examples, datasets, and challenge instructions. Attribute the course as inspiration/reference where appropriate. Do not copy proprietary course text or solutions.
+
+## 9. Structured final assessment
+
+The final assessment lives in `content/assessments/final-assessment.json` and is validated by `apps/web/lib/assessment.ts`. Keep task IDs stable, use only the five mapped stages and repository synthetic fixtures, and ensure the task points sum to 100. Knowledge tasks compare typed answers locally and must not claim that a command was executed. Practical tasks use learner-confirmed rubric items and must be labeled self-assessed. Keep hints and example solutions hidden in the app until the learner submits or confirms the relevant task. Do not add an assessment item to the source-course activity count.

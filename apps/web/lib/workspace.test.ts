@@ -20,16 +20,18 @@ class MemoryStorage implements StoragePort {
 
 const commandIds = ["ls", "pwd"];
 const challengeIds = ["directory-organization"];
+const assessmentTaskIds = ["a-which", "b-organize"];
+const assessmentSectionIds = ["fundamentals", "filesystem"];
 
 describe("workspace persistence", () => {
   it("starts empty, saves, and reloads versioned LocalStorage data", () => {
     const storage = new MemoryStorage();
-    const initial = readWorkspace(storage, commandIds, challengeIds);
+    const initial = readWorkspace(storage, commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
     expect(initial.status).toBe("empty");
     const changed = reduceWorkspace(initial.state, { type: "toggle-command", id: "ls" });
     expect(writeWorkspace(storage, changed)).toBe(true);
-    expect(storage.getItem(WORKSPACE_KEY)).toContain('"schemaVersion":1');
-    const loaded = readWorkspace(storage, commandIds, challengeIds);
+    expect(storage.getItem(WORKSPACE_KEY)).toContain('"schemaVersion":2');
+    const loaded = readWorkspace(storage, commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
     expect(loaded.status).toBe("loaded");
     expect(loaded.state.completedCommands).toEqual(["ls"]);
   });
@@ -55,10 +57,35 @@ describe("workspace persistence", () => {
     expect(result.state.bookmarks).toEqual(["pwd"]);
   });
 
+  it("upgrades existing version 1 workspace without losing user data", () => {
+    const result = decodeWorkspace(JSON.stringify({
+      schemaVersion: 1,
+      completedCommands: ["ls"],
+      completedChallenges: ["directory-organization"],
+      bookmarks: ["pwd"],
+      notes: { "command:ls": "review options" },
+      recentlyViewed: [{ commandId: "pwd", viewedAt: 100 }],
+      challengeResults: { "directory-organization": { score: 90, completedAt: "2026-11-27T10:00:00.000Z" } },
+      theme: "dark",
+    }), commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
+    expect(result.status).toBe("migrated");
+    expect(result.state.schemaVersion).toBe(2);
+    expect(result.state).toMatchObject({
+      completedCommands: ["ls"],
+      completedChallenges: ["directory-organization"],
+      bookmarks: ["pwd"],
+      notes: { "command:ls": "review options" },
+      recentlyViewed: [{ commandId: "pwd", viewedAt: 100 }],
+      theme: "dark",
+      assessmentAttempts: [],
+    });
+    expect(result.state.challengeResults["directory-organization"].score).toBe(90);
+  });
+
   it("drops invalid entries but keeps valid data", () => {
     const result = decodeWorkspace(
       JSON.stringify({
-        schemaVersion: 1,
+        schemaVersion: 2,
         completedCommands: ["ls", "unknown", "ls"],
         completedChallenges: [],
         bookmarks: ["directory-organization", "missing"],
@@ -67,6 +94,7 @@ describe("workspace persistence", () => {
         challengeResults: {
           "directory-organization": { score: 80, completedAt: "2026-11-27T10:00:00.000Z" },
         },
+        assessmentAttempts: [],
         theme: "dark",
       }),
       commandIds,
@@ -124,6 +152,53 @@ describe("workspace actions and progress", () => {
       { type: "reset" },
     );
     expect(changed).toEqual(createEmptyWorkspace());
+  });
+
+  it("persists interrupted attempts and retains repeated completed attempts", () => {
+    const storage = new MemoryStorage();
+    const draft = {
+      id: "assessment-draft-1",
+      status: "in_progress" as const,
+      startedAt: "2026-11-27T10:00:00.000Z",
+      updatedAt: "2026-11-27T10:01:00.000Z",
+      completedAt: null,
+      responses: { "a-which": { answer: "which", submitted: true, correct: true, checkedCriteria: [], completedAt: "2026-11-27T10:01:00.000Z" } },
+      score: null,
+      passed: null,
+      sectionScores: {},
+    };
+    let state = reduceWorkspace(createEmptyWorkspace(), { type: "save-assessment-attempt", attempt: draft });
+    expect(writeWorkspace(storage, state)).toBe(true);
+    const loaded = readWorkspace(storage, commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
+    expect(loaded.state.assessmentAttempts[0]).toMatchObject({ id: draft.id, status: "in_progress", responses: draft.responses });
+    const completed = { ...draft, status: "completed" as const, completedAt: "2026-11-27T10:02:00.000Z", updatedAt: "2026-11-27T10:02:00.000Z", score: 80, passed: true, sectionScores: { fundamentals: 10 } };
+    state = reduceWorkspace(loaded.state, { type: "save-assessment-attempt", attempt: completed });
+    state = reduceWorkspace(state, { type: "save-assessment-attempt", attempt: { ...completed, id: "assessment-draft-2", startedAt: "2026-11-28T10:00:00.000Z", updatedAt: "2026-11-28T10:00:00.000Z" } });
+    expect(state.assessmentAttempts.map((attempt) => attempt.id)).toEqual(["assessment-draft-2", "assessment-draft-1"]);
+    for (let index = 3; index <= 12; index += 1) {
+      const timestamp = new Date(Date.UTC(2026, 11, index, 10)).toISOString();
+      state = reduceWorkspace(state, {
+        type: "save-assessment-attempt",
+        attempt: { ...completed, id: "assessment-draft-" + index, startedAt: timestamp, updatedAt: timestamp },
+      });
+    }
+    expect(state.assessmentAttempts).toHaveLength(10);
+    expect(state.assessmentAttempts[0].id).toBe("assessment-draft-12");
+  });
+
+  it("drops malformed and unknown assessment data while preserving valid workspace fields", () => {
+    const result = decodeWorkspace(JSON.stringify({
+      schemaVersion: 2,
+      completedCommands: ["ls"], completedChallenges: [], bookmarks: [], notes: {}, recentlyViewed: [], challengeResults: {}, theme: "light",
+      assessmentAttempts: [
+        { id: "bad", status: "completed", startedAt: "yesterday", updatedAt: "yesterday", completedAt: "yesterday", responses: {}, score: 900, passed: true, sectionScores: {} },
+        { id: "assessment-ok", status: "in_progress", startedAt: "2026-11-27T10:00:00.000Z", updatedAt: "2026-11-27T10:01:00.000Z", completedAt: null, responses: { "not-a-task": { answer: "x", submitted: true, correct: true, checkedCriteria: [], completedAt: null } }, score: null, passed: null, sectionScores: { "not-a-section": 80 } },
+      ],
+    }), commandIds, challengeIds, assessmentTaskIds, assessmentSectionIds);
+    expect(result.state.completedCommands).toEqual(["ls"]);
+    expect(result.status).toBe("recovered");
+    expect(result.state.assessmentAttempts).toHaveLength(1);
+    expect(result.state.assessmentAttempts[0]).toMatchObject({ responses: {}, sectionScores: {} });
   });
 });
 

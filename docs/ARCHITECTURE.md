@@ -85,12 +85,12 @@ Preferred:
 
 V1 is implemented in `apps/web`: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui primitives, React Markdown with GFM, gray-matter frontmatter parsing, and Zod validation. `lib/content.ts` discovers stage READMEs, Detailed/Revision pairs, and challenge files from the repository. It validates stable IDs, matching metadata, stage placement, prerequisites, and challenge starter paths; malformed content fails loudly instead of disappearing from the interface.
 
-Routes include the dashboard, stage index/detail, searchable command library, both guide modes, challenge index/detail, and personal workspace. Dynamic route parameters are checked against the discovered catalog. Markdown is sanitized before rendering; the sanitizer retains GitHub-compatible `details`/`summary` solution blocks and local Markdown links are mapped to application routes. The app reads the repository content at build/runtime and does not keep a second copy of lesson text.
+Routes include the dashboard, stage index/detail, searchable command library, both guide modes, challenge index/detail, the structured final assessment, and personal workspace. Dynamic route parameters are checked against the discovered catalog. Markdown is sanitized before rendering; the sanitizer retains GitHub-compatible `details`/`summary` solution blocks and local Markdown links are mapped to application routes. The app reads the repository content at build/runtime and does not keep a second copy of lesson text.
 
 V1 runs with `next dev` / `next start`; static export is not configured because the content loader reads repository files and the deployment contract has not yet been selected. Avoid adding a CMS or database in V1.
 
 ### Deployment consideration
-V1 prerenders content routes but is configured for the Next.js server runtime, not `output: export`. Deployment remains a Milestone 8 decision; avoid server-only features beyond repository content discovery that would create unnecessary lock-in.
+V1 prerenders content routes but is configured for the Next.js server runtime, not `output: export`. Hosting remains an outstanding release decision; avoid server-only features beyond repository content discovery that would create unnecessary lock-in.
 
 ## 5. Progress storage
 
@@ -106,7 +106,7 @@ Example conceptual data:
 
 ```ts
 type ProgressState = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   completedItems: string[];
   bookmarks: string[];
   notes: Record<string, string>;
@@ -115,10 +115,13 @@ type ProgressState = {
     completedAt: string;
   }>;
   recentlyViewed: string[];
+  assessmentAttempts: AssessmentAttempt[];
 };
 ```
 
-Do not treat this example as permission to store sensitive information. Notes are user-controlled local content. The app stores schema version 1 under `linux-labs.workspace.v1`. It validates and filters records against the current command/challenge catalog, supports the previous `completedItems` shape, and preserves unsupported future versions rather than overwriting them. Corrupt data opens with safe defaults and a recovery notice. Users can export/import a JSON copy and use a confirmation dialog before clearing data. Theme initialization reads the stored preference before paint to reduce theme flash.
+Do not treat this example as permission to store sensitive information. Notes are user-controlled local content. The app stores schema version 2 under the stable key `linux-labs.workspace.v1`. Version 1 workspace data is migrated while preserving completions, bookmarks, notes, recent views, challenge results, and theme; the new assessment history starts empty. Attempt records are bounded and filtered against the assessment task/section IDs. Unsupported future versions are preserved rather than overwritten. Corrupt data opens with safe defaults and a recovery notice. Users can export/import a JSON copy and use a confirmation dialog before clearing data. Theme initialization reads the stored preference before paint to reduce theme flash.
+
+The final assessment definition is canonical structured JSON in `content/assessments/final-assessment.json`. Its Zod schema enforces task shape, unique IDs, and a 100-point total. Typed answers are checked locally against accepted answers; practical task points are learner-reported rubric confirmations. The browser neither runs commands nor verifies practical work. Attempts autosave after responses, can resume after navigation/reload, and retain up to ten records for review. This client-side assessment is a learning aid, not a secure exam or credential.
 
 ## 6. Playground architecture
 

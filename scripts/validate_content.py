@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import json
 import sys
 from pathlib import Path
 
@@ -18,6 +19,7 @@ CATEGORIES = {
     1: "file-system", 2: "file-content", 3: "file-search",
     4: "text-processing", 5: "system-information",
 }
+ASSESSMENT = CONTENT / "assessments" / "final-assessment.json"
 ENUMS = {
     "type": {"command", "challenge"},
     "mode": {"detailed", "revision"},
@@ -52,8 +54,70 @@ def parse_frontmatter(path: Path) -> tuple[dict[str, object], str]:
     return data, "\n".join(lines[end + 1 :])
 
 
+def validate_assessment(errors: list[str]) -> None:
+    rel = ASSESSMENT.relative_to(ROOT).as_posix()
+    try:
+        data = json.loads(ASSESSMENT.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"{rel}: cannot read valid JSON: {exc}")
+        return
+    if not isinstance(data, dict) or data.get("id") != "linux-labs-final-assessment":
+        errors.append(f"{rel}: expected the final assessment object and stable id")
+        return
+    sections = data.get("sections")
+    if not isinstance(sections, list) or len(sections) != 6:
+        errors.append(f"{rel}: expected six assessment sections")
+        return
+    section_ids: set[str] = set()
+    task_ids: set[str] = set()
+    points = 0
+    for section in sections:
+        if not isinstance(section, dict):
+            errors.append(f"{rel}: each section must be an object")
+            continue
+        section_id = section.get("id")
+        if not isinstance(section_id, str) or not section_id or section_id in section_ids:
+            errors.append(f"{rel}: section ids must be unique non-empty strings")
+        else:
+            section_ids.add(section_id)
+        tasks = section.get("tasks")
+        if not isinstance(tasks, list) or not tasks:
+            errors.append(f"{rel}: every section must contain tasks")
+            continue
+        for task in tasks:
+            if not isinstance(task, dict):
+                errors.append(f"{rel}: each task must be an object")
+                continue
+            task_id = task.get("id")
+            if not isinstance(task_id, str) or not task_id or task_id in task_ids:
+                errors.append(f"{rel}: task ids must be unique non-empty strings")
+            else:
+                task_ids.add(task_id)
+            task_points = task.get("points")
+            if not isinstance(task_points, int) or isinstance(task_points, bool) or task_points <= 0:
+                errors.append(f"{rel}: task {task_id!r} must have positive integer points")
+            else:
+                points += task_points
+            if task.get("type") == "knowledge":
+                if not isinstance(task.get("acceptedAnswers"), list) or not task["acceptedAnswers"]:
+                    errors.append(f"{rel}: knowledge task {task_id!r} needs accepted answers")
+            elif task.get("type") == "self_assessed":
+                if not isinstance(task.get("rubric"), list) or not task["rubric"]:
+                    errors.append(f"{rel}: self-assessed task {task_id!r} needs a rubric")
+            else:
+                errors.append(f"{rel}: task {task_id!r} has an unknown type")
+            for key in ("prompt", "hint", "feedback", "solution"):
+                if not isinstance(task.get(key), str) or not task[key].strip():
+                    errors.append(f"{rel}: task {task_id!r} needs {key}")
+    if points != 100:
+        errors.append(f"{rel}: task points must total 100; found {points}")
+    if data.get("passingScore") != 75 or data.get("minimumSectionPercent") != 50:
+        errors.append(f"{rel}: passing rules must require 75 overall and 50 percent per section")
+
+
 def main() -> int:
     errors: list[str] = []
+    validate_assessment(errors)
     # README files describe folders rather than individual content records and
     # intentionally do not carry content frontmatter.
     pages = sorted(path for path in CONTENT.rglob("*.md") if path.name.lower() != "readme.md")
@@ -114,7 +178,7 @@ def main() -> int:
         print("Content validation failed:")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print(f"Content validation passed: {len(pages)} Markdown page(s), {len(by_command)} complete command pair(s).")
+    print(f"Content validation passed: {len(pages)} Markdown page(s), {len(by_command)} complete command pair(s), and the 100-point final assessment.")
     return 0
 
 

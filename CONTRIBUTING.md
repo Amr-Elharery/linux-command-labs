@@ -20,6 +20,8 @@ Thanks for improving Linux Labs.
 - Add or update tests for changed behavior.
 - Update docs when workflows or schemas change.
 - For web work, use Node.js 20.9+ and run commands from `apps/web`: `npm ci`, `npm test`, `npm run lint`, `npm run typecheck`, and `npm run build`.
+- Keep final assessment tasks in `content/assessments/final-assessment.json`; preserve its 100-point total and validate it with app tests. Browser-checked answers are not proof of terminal execution, and hands-on items must remain explicitly self-assessed.
+- Assessment and workspace changes must preserve/migrate existing browser progress; test reload, interrupted attempts, repeated attempts, and malformed imports.
 - Do not commit localStorage exports, browser profiles, or personal progress.
 
 ## Suggested commit messages

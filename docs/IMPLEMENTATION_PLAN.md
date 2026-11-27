@@ -141,16 +141,19 @@ Status: Implemented. The portal discovers the five stage READMEs, all 31 Detaile
 ## Milestone 8 — Final assessment and release
 
 Tasks:
-- Build integrated assessment across all five stages.
-- Run content, script, app, accessibility, and link checks.
-- Finish documentation and deployment instructions.
-- Publish repository and deploy static site.
+- Build a structured, scored assessment across all five stages with an integrated practical scenario.
+- Persist/resume attempts and history without losing existing browser-local progress.
+- Run content, script, app, accessibility, and link checks; document environment-blocked checks.
+- Finish release checklist, attribution, license, repository URL, and deployment decisions.
+- Do not publish or deploy without explicit approval.
 
 Acceptance:
-- All 41 source activities are accounted for or discrepancies documented.
+- All known source activity discrepancies are documented; no missing activity is invented.
 - All 31 commands have both learning modes.
 - Setup and reset instructions are verified.
 - No credentials, personal logs, or local progress are committed.
+
+Status: Assessment and release preparation implemented; Milestone 8 validation is incomplete. Release remains pending: run Linux validator/regressions on an accessible Linux host, perform browser accessibility/responsive review, decide whether the specified cheat sheets must be added, choose a license, confirm course attribution, replace the repository URL placeholder, and obtain explicit approval before publication/deployment.
 
 ## Scope control
 

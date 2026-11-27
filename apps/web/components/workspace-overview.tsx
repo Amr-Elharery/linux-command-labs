@@ -10,6 +10,7 @@ import { useWorkspace } from "@/components/workspace-provider";
 import { WorkspaceTools } from "@/components/workspace-tools";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export function WorkspaceOverview({
@@ -167,6 +168,17 @@ export function WorkspaceOverview({
           </div>
         </section>
       )}
+
+      <section className="rounded-2xl border border-border/70 bg-card p-5 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div><p className="text-xs font-bold uppercase tracking-[.15em] text-primary">Final assessment</p><h2 className="mt-1 text-lg font-semibold">Your attempts</h2><p className="mt-1 text-sm text-muted-foreground">Attempts and self-reported practice checks stay on this device.</p></div>
+          <Button asChild variant="secondary"><Link href="/assessment">{state.assessmentAttempts.some((attempt) => attempt.status === "in_progress") ? "Resume assessment" : "Open assessment"}<ArrowRight /></Link></Button>
+        </div>
+        {state.assessmentAttempts.length > 0 && <div className="mt-4 space-y-2">{state.assessmentAttempts.slice(0, 3).map((attempt) => <Link key={attempt.id} href={"/assessment?attempt=" + encodeURIComponent(attempt.id) + "#history"} className="flex items-center justify-between gap-3 rounded-xl border border-border/70 px-3.5 py-3 transition-colors hover:bg-muted/50">
+          <span><span className="block text-sm font-medium">{attempt.status === "in_progress" ? "Draft · resume attempt" : attempt.passed ? "Passed" : "Attempt complete"}</span><span className="text-xs text-muted-foreground">{new Date(attempt.startedAt).toLocaleDateString()}</span></span>
+          <Badge variant={attempt.passed ? "default" : "secondary"}>{attempt.status === "completed" ? attempt.score + "/100" : "In progress"}</Badge>
+        </Link>)}</div>}
+      </section>
 
       <WorkspaceTools />
     </div>
